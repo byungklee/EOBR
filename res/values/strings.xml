@@ -20,10 +20,26 @@
 	<string name="start">Start</string>
 	<string name="reset">Reset</string>
 	<string name="back">Back</string>
+	<string name="pickup_empty">Pickup Empty</string>
+	<string name="pickup_full">Pickup Full</string>
+	<string name="deliver_empty">Deliver Empty</string>
+	<string name="deliver_full">Deliver Full</string>
 	
 	<string name="status">Status</string>
 	<string name="road">Road</string>
 	<string name="note">Note</string>
+	<string name="od_1">Waiting at the gate</string>
+	<string name="od_2">Terminal gate closed</string>
+	<string name="od_3">Filling out paperwork</string>
+	<string name="road_1">Traffic</string>
+	<string name="road_2">Refueling</string>
+	<string name="road_3">Equipment Problem</string>
+	
+	
+	
+	
+	
+	
 	
 	
 	
