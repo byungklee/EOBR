@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+    <TextView        
+        android:layout_width="144dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/origin"
+        android:text="@string/origin"
+        android:layout_marginLeft="48dp"
+        android:layout_marginTop="24dp"
+        android:textSize="24sp"
+        />
+    <Spinner 
+        android:layout_width="144dp"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/origin"
+        android:layout_alignTop="@+id/origin"
+        android:id="@+id/origin_spinner"        
+        />
+    <TextView        
+        android:layout_width="144dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/origin"
+        android:layout_alignLeft="@+id/origin"
+        android:id="@+id/destin"        
+        android:text="@string/destination"
+        android:textSize="24sp"        
+        />
+    <Spinner 
+        android:layout_width="144dp"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/destin"
+        android:layout_alignTop="@+id/destin"
+        android:id="@+id/destin_spinner"
+                
+        />
+    <TextView
+        android:layout_width="144dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/trip_type"        
+        android:text="@string/trip_type"
+        android:layout_below="@+id/destin"
+        android:layout_alignLeft="@+id/origin"
+        android:textSize="24sp"        
+        />    
+    <RadioGroup 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/trip_type"
+        android:layout_alignTop="@+id/trip_type"
+        android:orientation="horizontal"
+        >
+        <RadioButton 
+            android:text="Pick Empty"/>
+        <RadioButton
+            android:text="Pick Full" />
+        <RadioButton
+            android:text="Drop Emtpy" />
+        <RadioButton
+            android:text="Drop Full" />
+    </RadioGroup>
+    
+    <Button
+        android:id="@+id/start_button"
+        android:text="@string/start"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:layout_marginBottom="90dp"
+        android:layout_width="144dp"
+        android:layout_height="wrap_content"
+        />
+    <Button
+        android:id="@+id/reset_button"
+        android:text="@string/reset"
+        android:layout_width="144dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="45dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"/>
+    <Button
+        android:id="@+id/back_button"
+        android:text="@string/back"
+        android:layout_width="144dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+           />
+
+</RelativeLayout>

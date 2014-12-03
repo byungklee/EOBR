@@ -1,0 +1,39 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.eobr.MainActivity" >
+
+    
+    <item
+        android:id="@+id/action_home"
+        android:title="@string/action_home"
+        android:orderInCategory="1"
+        app:showAsAction="always"
+        />
+    
+    <item
+        android:id="@+id/action_new_trip"
+        android:title="@string/action_new_trip"
+        android:orderInCategory="2"
+        app:showAsAction="always"
+        />
+    <item
+        android:id="@+id/action_view_trip"
+        android:title="@string/action_view_trip"
+        android:orderInCategory="3"
+        app:showAsAction="always"
+        />
+    <item
+        android:id="@+id/action_stop_trip"
+        android:title="@string/action_stop_trip"
+        android:orderInCategory="4"
+        app:showAsAction="always"
+        />
+    
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        app:showAsAction="never"/>
+        
+</menu>
