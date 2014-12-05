@@ -15,6 +15,7 @@ import android.widget.Toast;
 public class MainActivity extends ActionBarActivity {
 
 
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -31,7 +32,6 @@ public class MainActivity extends ActionBarActivity {
     protected void onResume(){
         super.onResume();
         Log.i("MainActivity", "Resuming");
-//        FragmentManager manager = getSupportFragmentManager();
 
     }
 	
@@ -56,7 +56,6 @@ public class MainActivity extends ActionBarActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-
 		//Inflate the menu; this adds items to the action bar if it is present.
 		
 		getMenuInflater().inflate(R.menu.main, menu);
@@ -87,23 +86,4 @@ public class MainActivity extends ActionBarActivity {
 		
 		return false;
 	}
-
-	/**
-	 * A placeholder fragment containing a simple view.
-	 */
-//	public static class PlaceholderFragment extends Fragment {
-//
-//		public PlaceholderFragment() {
-//			
-//		}
-//
-//		@Override
-//		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-//				Bundle savedInstanceState) {
-//			View rootView = inflater.inflate(R.layout.fragment_login, container,
-//					false);
-//			return rootView;
-//		}
-//	}
-
 }

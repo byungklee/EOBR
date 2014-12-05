@@ -81,18 +81,14 @@ public class NewTripFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+                Intent gpsIntent = new Intent(getActivity().getApplicationContext(), GPSService.class);
+                getActivity().startService(gpsIntent);
 
 				Intent i = new Intent(getActivity().getApplicationContext(), StatusActivity.class);
 				startActivity(i);
                 FragmentManager fm = getFragmentManager();
                 fm.beginTransaction().hide(NewTripFragment.this);
                 fm.popBackStack();
-
-
-
-
-
-
 			}
 		});
 
