@@ -17,6 +17,7 @@ public class LoginFragment extends Fragment {
 
 	private Button startButton;
 	private Button stopButton;
+
 	
 	public LoginFragment() {
 		
@@ -37,16 +38,15 @@ public class LoginFragment extends Fragment {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				//Intent i = new Intent(getActivity().getApplicationContext(), NewTripActivity.class);
-				
+
+
 				//getActivity().startActivity(i);
                 FragmentManager fragmentManager2 = getFragmentManager();
                 FragmentTransaction fragmentTransaction2 = fragmentManager2.beginTransaction();
                 NewTripFragment fragment2 = new NewTripFragment();
-
-                fragmentTransaction2.addToBackStack("xyz");
+                fragmentTransaction2.addToBackStack("Login");
                 fragmentTransaction2.hide(LoginFragment.this);
                 fragmentTransaction2.add(android.R.id.content, fragment2);
-
                 fragmentTransaction2.commit();
 
             }
@@ -60,7 +60,7 @@ public class LoginFragment extends Fragment {
 				Toast.makeText(getActivity().getApplicationContext(), "df", Toast.LENGTH_SHORT).show();
 			}
 		});
-		
+
 		return rootView;
 	}
 }

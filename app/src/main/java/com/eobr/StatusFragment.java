@@ -2,9 +2,11 @@ package com.eobr;
 
 
 
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,11 +19,14 @@ import android.widget.TextView;
  * Use the {@link StatusFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class StatusFragment extends Fragment {
+public class StatusFragment extends Fragment implements GPSListener {
+
 
 
     private Button mNoteButton;
     private TextView mDetailStatusTextView;
+
+    private GPSReceiver gpsReceiver;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -94,8 +99,21 @@ public class StatusFragment extends Fragment {
                 ft.commit();
             }
         });
+
+        gpsReceiver = new GPSReceiver(this);
+        IntentFilter mStatusIntentFilter = new IntentFilter(
+                Constants.BROAD_CAST_LOCATION);
+
+
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(
+                gpsReceiver,
+                mStatusIntentFilter);
         return v;
     }
 
 
+    @Override
+    public void execute(String str, double latitude, double longitude) {
+        mDetailStatusTextView.setText(gpsReceiver.getLocationList().toString());
+    }
 }

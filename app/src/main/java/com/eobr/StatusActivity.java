@@ -1,17 +1,21 @@
 package com.eobr;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
+import android.app.ActivityManager;
+import android.app.Service;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewConfiguration;
 import android.widget.Toast;
 
 public class StatusActivity extends ActionBarActivity {
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -22,7 +26,23 @@ public class StatusActivity extends ActionBarActivity {
             transaction.add(R.id.container, new StatusFragment()).commit();
         }
         getOverflowMenu();
-	}
+
+        //only reads the currently running services
+//        ActivityManager am = (ActivityManager)this.getSystemService(ACTIVITY_SERVICE);
+//        List<ActivityManager.RunningServiceInfo> rs = am.getRunningServices(50);
+//        am.getRunningAppProcesses();
+//
+//        for (int i=0; i<rs.size(); i++) {
+//            ActivityManager.RunningServiceInfo
+//                    rsi = rs.get(i);
+//
+//            Log.i("Service", "Process " + rsi.process + " with component " + rsi.service.getClassName());
+//            if(rsi.service.getClassName() == "com.eobr.GPSService") {
+//
+//            }
+//        }
+
+    }
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -70,8 +90,6 @@ public class StatusActivity extends ActionBarActivity {
 			case R.id.action_stop_trip:
 				Toast.makeText(getApplicationContext(), "Stop", Toast.LENGTH_SHORT).show();
 				break;
-			
-			
 		}
 		
 		return false;
