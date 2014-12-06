@@ -79,9 +79,8 @@ public class StatusFragment extends Fragment implements GPSListener {
             @Override
             public void onClick(View v) {
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
+                ft.replace(R.id.container, new NoteFragment());
                 ft.addToBackStack("status");
-                ft.hide(StatusFragment.this);
-                ft.add(android.R.id.content, new NoteFragment());
 
                 ft.commit();
             }
@@ -92,9 +91,8 @@ public class StatusFragment extends Fragment implements GPSListener {
             @Override
             public void onClick(View v) {
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
+                ft.replace(R.id.container, new DetailStatusFragment());
                 ft.addToBackStack("status");
-                ft.hide(StatusFragment.this);
-                ft.add(android.R.id.content, new DetailStatusFragment());
 
                 ft.commit();
             }
@@ -111,9 +109,9 @@ public class StatusFragment extends Fragment implements GPSListener {
         return v;
     }
 
-
     @Override
     public void execute(String str, double latitude, double longitude) {
-        mDetailStatusTextView.setText(gpsReceiver.getLocationList().toString());
+        mDetailStatusTextView.setText(gpsReceiver.getListString());
+
     }
 }

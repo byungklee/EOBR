@@ -22,7 +22,6 @@ public class GPSService extends Service implements LocationListener {
     //Since we are going to keep adding location to the list
     //Choosing linkedlist over arraylist.
 
-
     public GPSService() {
     }
 
@@ -30,11 +29,19 @@ public class GPSService extends Service implements LocationListener {
     public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, this);
+        //requestionLocationUpdates(Provider, Min_Time in millisecond, Min_Distance in meter, listener)
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, this);
         Log.i(TAG, "Gps Service Enabled");
         Toast.makeText(getApplicationContext(), "GPS Service Enabled", Toast.LENGTH_SHORT).show();
     }
 
+    public void onDestroy() {
+        Log.i("GPSService", "GPSService stopped!");
+        locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+        locationManager.removeUpdates(this);
+        super.onDestroy();
+    }
 
 
     @Override
@@ -55,7 +62,6 @@ public class GPSService extends Service implements LocationListener {
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
-
     }
 
     @Override

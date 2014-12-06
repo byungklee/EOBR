@@ -44,9 +44,11 @@ public class LoginFragment extends Fragment {
                 FragmentManager fragmentManager2 = getFragmentManager();
                 FragmentTransaction fragmentTransaction2 = fragmentManager2.beginTransaction();
                 NewTripFragment fragment2 = new NewTripFragment();
-                fragmentTransaction2.addToBackStack("Login");
-                fragmentTransaction2.hide(LoginFragment.this);
-                fragmentTransaction2.add(android.R.id.content, fragment2);
+
+                //What is happening with replace is that
+                //remove(fragment1).add(fragment2)
+                fragmentTransaction2.replace(R.id.container, fragment2);
+                fragmentTransaction2.addToBackStack(null);
                 fragmentTransaction2.commit();
 
             }

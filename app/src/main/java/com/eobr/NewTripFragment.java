@@ -84,11 +84,12 @@ public class NewTripFragment extends Fragment {
                 Intent gpsIntent = new Intent(getActivity().getApplicationContext(), GPSService.class);
                 getActivity().startService(gpsIntent);
 
-				Intent i = new Intent(getActivity().getApplicationContext(), StatusActivity.class);
-				startActivity(i);
                 FragmentManager fm = getFragmentManager();
-                fm.beginTransaction().hide(NewTripFragment.this);
-                fm.popBackStack();
+                FragmentTransaction frt = fm.beginTransaction();
+                StatusFragment sfm = new StatusFragment();
+                frt.replace(R.id.container, sfm);
+                frt.commit();
+
 			}
 		});
 

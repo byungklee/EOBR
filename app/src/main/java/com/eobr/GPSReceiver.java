@@ -37,4 +37,12 @@ public class GPSReceiver extends BroadcastReceiver {
     public List getLocationList() {
         return locationList;
     }
+
+    public String getListString() {
+        StringBuilder sb = new StringBuilder();
+        for(MyLocation ml : locationList) {
+            sb.append(ml.getLatitude()).append(" ").append(ml.getLongitude()).append(" ").append(ml.getTimeString()).append("\n");
+        }
+        return sb.toString();
+    }
 }

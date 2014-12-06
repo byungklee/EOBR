@@ -33,11 +33,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.eobr.StatusActivity"
-            android:label="StatusActivity"
-            android:screenOrientation="landscape" >
-        </activity>
 
         <service
             android:name="com.eobr.GPSService"

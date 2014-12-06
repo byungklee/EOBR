@@ -3,6 +3,7 @@ package com.eobr;
 import java.lang.reflect.Field;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
@@ -54,7 +55,34 @@ public class MainActivity extends ActionBarActivity {
 		}
 	}
 
-	@Override
+    @Override
+    public void onBackPressed() {
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+
+            Log.i("MainActivity", "PopbackStack called.");
+            getSupportFragmentManager().popBackStack();
+            removeCurrentFragment();
+        } else {
+            Log.i("MainActivity", "super.back called");
+            super.onBackPressed();
+        }
+    }
+
+    public void removeCurrentFragment()
+    {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        Fragment currentFrag =  getSupportFragmentManager().findFragmentById(R.id.container);
+
+        if (currentFrag != null) {
+            transaction.remove(currentFrag);
+            transaction.commit();
+        }
+
+    }
+
+
+    @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		//Inflate the menu; this adds items to the action bar if it is present.
 		
