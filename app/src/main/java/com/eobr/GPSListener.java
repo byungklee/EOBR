@@ -5,4 +5,5 @@ package com.eobr;
  */
 public interface GPSListener {
     public void execute(String str, double latitude, double longitude);
+    public void executeForSingle(String str, double latitude, double longitude);
 }

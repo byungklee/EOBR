@@ -4,29 +4,31 @@ import android.app.Activity;
 
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link NewTripFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link NewTripFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class NewTripFragment extends Fragment {
+public class NewTripFragment extends Fragment implements GPSListener {
 
 
     private Button mStartButton;
+    private TextView mOriginTextView;
+    private GPSReceiver mGpsReceiver;
+    private RadioButton mPickUpEmpty;
+    private RadioGroup mTripTypeRadio;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -75,26 +77,83 @@ public class NewTripFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_new_trip, container, false);
+
+        mOriginTextView = (TextView) v.findViewById(R.id.origin_text);
+        mGpsReceiver = new GPSReceiver(this);
+        mPickUpEmpty = (RadioButton) v.findViewById(R.id.pickup_empty);
+        //PickupEmpty is set as default
+        mPickUpEmpty.setChecked(true);
+
+        mTripTypeRadio = (RadioGroup) v.findViewById(R.id.trip_type_radio);
+
+
+        Log.i("NEWTRIP", "INIT");
+
+        Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
+        getActivity().startService(i);
+
+        IntentFilter mStatusIntentFilter = new IntentFilter(
+                Constants.BROAD_CAST_LOCATION_ONCE);
+
+
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(
+                mGpsReceiver,
+                mStatusIntentFilter);
+
+        //GPSIntentService.startAction(getActivity().getApplicationContext());
+
+
         mStartButton = (Button) v.findViewById(R.id.start_button);
         		mStartButton.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-                Intent gpsIntent = new Intent(getActivity().getApplicationContext(), GPSService.class);
-                getActivity().startService(gpsIntent);
+                Intent gpsService = new Intent(getActivity().getApplicationContext(), GPSService.class);
+                getActivity().startService(gpsService);
 
                 FragmentManager fm = getFragmentManager();
                 FragmentTransaction frt = fm.beginTransaction();
                 StatusFragment sfm = new StatusFragment();
                 frt.replace(R.id.container, sfm);
                 frt.commit();
+                MainActivity.isRunning = true;
 
-			}
+
+
+                int checkedRadioButtonId = mTripTypeRadio.getCheckedRadioButtonId();
+
+                switch (checkedRadioButtonId) {
+                    case R.id.pickup_empty:
+                        MainActivity.tripType = "pickup_empty";
+                        break;
+                    case R.id.pickup_full:
+                        MainActivity.tripType = "pickup_full";
+                        break;
+                    case R.id.deliver_empty:
+                        MainActivity.tripType = "deliver_empty";
+                        break;
+                    case R.id.deliver_full:
+                        MainActivity.tripType = "deliver_full";
+                        break;
+                    default:
+                }
+
+            }
 		});
 
-
         return v;
+    }
+
+    @Override
+    public void execute(String str, double latitude, double longitude) {
+
+    }
+    private MyLocation ml;
+    @Override
+    public void executeForSingle(String str, double latitude, double longitude) {
+        ml = new MyLocation(str, latitude, longitude);
+        mOriginTextView.setText(latitude + " " + longitude);
     }
 
     // TODO: Rename method, update argument and hook method into UI event

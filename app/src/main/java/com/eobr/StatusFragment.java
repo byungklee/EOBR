@@ -2,11 +2,14 @@ package com.eobr;
 
 
 
+import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,11 +24,22 @@ import android.widget.TextView;
  */
 public class StatusFragment extends Fragment implements GPSListener {
 
-
+    private final String TAG = "StatusFragment";
 
     private Button mNoteButton;
-    private TextView mDetailStatusTextView;
+    private Button mOriginWaitingAtTheGate;
+    private Button mOriginTerminalGateClosed;
+    private Button mOriginFillingOutPaperWork;
 
+    private Button mDestinWaitingAtTheGate;
+    private Button mDestinTerminalGateClosed;
+    private Button mDestinFillingOutPaperWork;
+
+    private Button mRoadTraffic;
+    private Button mRoadRefueling;
+    private Button mRoadEquipmentProblem;
+
+    private TextView mDetailStatusTextView;
     private GPSReceiver gpsReceiver;
 
     // TODO: Rename parameter arguments, choose names that match
@@ -85,7 +99,6 @@ public class StatusFragment extends Fragment implements GPSListener {
                 ft.commit();
             }
         });
-
         mDetailStatusTextView = (TextView) v.findViewById(R.id.scroll_view);
         mDetailStatusTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,21 +110,145 @@ public class StatusFragment extends Fragment implements GPSListener {
                 ft.commit();
             }
         });
+        mOriginWaitingAtTheGate = (Button) v.findViewById(R.id.origin_waiting_at_the_gate);
+        mOriginWaitingAtTheGate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
+                i.putExtra("type", "origin_wait");
+                getActivity().startService(i);
+            }
+        });
+        mOriginTerminalGateClosed = (Button) v.findViewById(R.id.origin_terminal_gate_closed);
+        mOriginTerminalGateClosed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
+                i.putExtra("type", "origin_terminal");
+                getActivity().startService(i);
+            }
+        });
+        mOriginFillingOutPaperWork = (Button) v.findViewById(R.id.origin_filling_out_paperwork);
+        mOriginFillingOutPaperWork.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
+                i.putExtra("type", "origin_paper");
+                getActivity().startService(i);
+            }
+        });
+        mDestinWaitingAtTheGate = (Button) v.findViewById(R.id.destin_waiting_at_the_gate);
+        mDestinWaitingAtTheGate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
+                i.putExtra("type", "destin_wait");
+                getActivity().startService(i);
+            }
+        });
+        mDestinTerminalGateClosed = (Button) v.findViewById(R.id.destin_terminal_gate_closed);
+        mDestinTerminalGateClosed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
+                i.putExtra("type", "destin_terminal");
+                getActivity().startService(i);
+            }
+        });
+        mDestinFillingOutPaperWork = (Button) v.findViewById(R.id.destin_filling_out_paperwork);
+        mDestinFillingOutPaperWork.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
+                i.putExtra("type", "destin_paper");
+                getActivity().startService(i);
+            }
+        });
+        mRoadTraffic = (Button) v.findViewById(R.id.road_traffic);
+        mRoadTraffic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
+                i.putExtra("type", "road_traffic");
+                getActivity().startService(i);
+            }
+        });
+        mRoadRefueling = (Button) v.findViewById(R.id.road_refueling);
+        mRoadRefueling.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
+                i.putExtra("type", "road_refueling");
+                getActivity().startService(i);
+            }
+        });
+        mRoadEquipmentProblem = (Button) v.findViewById(R.id.road_equipment_problem);
+        mRoadEquipmentProblem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
+                i.putExtra("type", "road_equipment");
+                getActivity().startService(i);
+            }
+        });
+
+
 
         gpsReceiver = new GPSReceiver(this);
         IntentFilter mStatusIntentFilter = new IntentFilter(
                 Constants.BROAD_CAST_LOCATION);
-
+        IntentFilter mLocationOnceFilter = new IntentFilter(Constants.BROAD_CAST_LOCATION_ONCE);
 
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(
                 gpsReceiver,
                 mStatusIntentFilter);
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(
+                gpsReceiver,
+                mLocationOnceFilter);
         return v;
+    }
+
+
+
+
+    public String getListString() {
+        StringBuilder sb = new StringBuilder();
+//        for(MyLocation ml : MainActivity.myLocationList) {
+//            sb.append(ml.getLatitude()).append(" ").append(ml.getLongitude()).append(" ").append(ml.getTimeString()).append("\n");
+//        }
+        int size = MainActivity.myLocationList.size();
+        if(size > 5) {
+            for(int i=size - 5;i<size;i++) {
+                MyLocation ml = MainActivity.myLocationList.get(i);
+                sb.append(ml.getType() + " ").append(ml.getLatitude()).append(" ").append(ml.getLongitude()).append(" ").append(ml.getTimeString()).append("\n");
+            }
+        } else {
+            for(MyLocation ml : MainActivity.myLocationList) {
+            sb.append(ml.getType() + " ").append(ml.getLatitude()).append(" ").append(ml.getLongitude()).append(" ").append(ml.getTimeString()).append("\n");
+         }
+        }
+        return sb.toString();
     }
 
     @Override
     public void execute(String str, double latitude, double longitude) {
-        mDetailStatusTextView.setText(gpsReceiver.getListString());
+        Log.i(TAG, str + " " + latitude + " " + longitude );
+        mDetailStatusTextView.setText(getListString());
+    }
 
+    @Override
+    public void executeForSingle(String str, double latitude, double longitude) {
+        MyLocation location = new MyLocation(str,
+                latitude,
+                longitude);
+        MainActivity.myLocationList.add(location);
+        DbAdapter db = new DbAdapter(getActivity().getApplicationContext());
+        SQLiteDatabase sqlDb = db.getWritableDatabase();
+        Log.i(TAG, "Checking time string " + location.getTimeString());
+        sqlDb.execSQL("insert into trips (truck_id, trip_type, type, latitude, longitude, time) " +
+                "values ("+MainActivity.TRUCK_ID + ", \"" + MainActivity.tripType + "\", " +
+                location.getLatitude() + ", " + location.getLongitude() + ", \"" + location.getTimeString() + "\")");
+        Log.i(TAG, str + " " + latitude + " " + longitude );
+        mDetailStatusTextView.setText(getListString());
     }
 }

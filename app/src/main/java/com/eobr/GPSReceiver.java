@@ -12,8 +12,8 @@ import java.util.List;
 public class GPSReceiver extends BroadcastReceiver {
     public GPSReceiver() {
     }
-    private List<MyLocation> locationList = new LinkedList<MyLocation>();
 
+    List<MyLocation> locationList = new LinkedList<MyLocation>();
     GPSListener gpsListener;
     public GPSReceiver(GPSListener gpsListener) {
         this.gpsListener = gpsListener;
@@ -27,10 +27,23 @@ public class GPSReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         // TODO: This method is called when the BroadcastReceiver is receiving
         // an Intent broadcast.
-        Log.i("GPSReceiver", "GPS info has been received");
-        MyLocation location = new MyLocation(intent.getDoubleExtra("latitude",0), intent.getDoubleExtra("longitude",0));
-        locationList.add(location);
-        gpsListener.execute("Updated", location.getLatitude(), location.getLongitude());
+        Log.i("GPSReceiver", "GPS info has been received " + intent.getAction() + " " + intent.getType() );
+        if(intent.getAction().equals(Constants.BROAD_CAST_LOCATION)) {
+            Log.i("GPSReceiver", "constant" );
+            MyLocation location = new MyLocation(intent.getStringExtra("type"),
+                    intent.getDoubleExtra("latitude", 0),
+                    intent.getDoubleExtra("longitude", 0));
+            MainActivity.myLocationList.add(location);
+
+
+            gpsListener.execute(location.getType(), location.getLatitude(), location.getLongitude());
+        } else if(intent.getAction().equals(Constants.BROAD_CAST_LOCATION_ONCE)) {
+            MyLocation location = new MyLocation(intent.getStringExtra("type"),
+                    intent.getDoubleExtra("latitude", 0),
+                    intent.getDoubleExtra("longitude", 0));
+
+            gpsListener.executeForSingle(location.getType(), location.getLatitude(), location.getLongitude());
+        }
         //throw new UnsupportedOperationException("Not yet implemented");
     }
 

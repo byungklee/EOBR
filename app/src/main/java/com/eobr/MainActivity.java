@@ -1,7 +1,12 @@
 package com.eobr;
 
 import java.lang.reflect.Field;
+import java.util.LinkedList;
+import java.util.List;
 
+import android.content.Context;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,12 +20,18 @@ import android.widget.Toast;
 
 public class MainActivity extends ActionBarActivity {
 
-
+    public static List<MyLocation> myLocationList = new LinkedList<MyLocation>();
+    public static boolean isRunning = false;
+    public static String tripType = "";
+    public static String TRUCK_ID = "1";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+        WifiManager manager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        WifiInfo info = manager.getConnectionInfo();
+        TRUCK_ID = info.getMacAddress();
 
 		if (savedInstanceState == null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

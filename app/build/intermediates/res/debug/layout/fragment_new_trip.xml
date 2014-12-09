@@ -15,40 +15,41 @@
              android:layout_marginTop="24dp"
              android:textSize="24sp"
              />
-         <Spinner
+         <TextView
              android:layout_width="144dp"
              android:layout_height="wrap_content"
              android:layout_toRightOf="@+id/origin"
              android:layout_alignTop="@+id/origin"
-             android:id="@+id/origin_spinner"
+             android:id="@+id/origin_text"
              />
-         <TextView
-             android:layout_width="144dp"
-             android:layout_height="wrap_content"
-             android:layout_below="@+id/origin"
-             android:layout_alignLeft="@+id/origin"
-             android:id="@+id/destin"
-             android:text="@string/destination"
-             android:textSize="24sp"
-             />
-         <Spinner
-             android:layout_width="144dp"
-             android:layout_height="wrap_content"
-             android:layout_toRightOf="@+id/destin"
-             android:layout_alignTop="@+id/destin"
-             android:id="@+id/destin_spinner"
+         <!--<TextView-->
+             <!--android:layout_width="144dp"-->
+             <!--android:layout_height="wrap_content"-->
+             <!--android:layout_below="@+id/origin"-->
+             <!--android:layout_alignLeft="@+id/origin"-->
+             <!--android:id="@+id/destin"-->
+             <!--android:text="@string/destination"-->
+             <!--android:textSize="24sp"-->
+             <!--/>-->
+         <!--<Spinner-->
+             <!--android:layout_width="144dp"-->
+             <!--android:layout_height="wrap_content"-->
+             <!--android:layout_toRightOf="@+id/destin"-->
+             <!--android:layout_alignTop="@+id/destin"-->
+             <!--android:id="@+id/destin_spinner"-->
 
-             />
+             <!--/>-->
          <TextView
              android:layout_width="144dp"
              android:layout_height="wrap_content"
              android:id="@+id/trip_type"
              android:text="@string/trip_type"
-             android:layout_below="@+id/destin"
+             android:layout_below="@+id/origin"
              android:layout_alignLeft="@+id/origin"
              android:textSize="24sp"
              />
          <RadioGroup
+             android:id="@+id/trip_type_radio"
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
              android:layout_toRightOf="@+id/trip_type"
@@ -57,19 +58,22 @@
              >
 
              <RadioButton
+                 android:id="@+id/pickup_empty"
                  android:text="@string/pickup_empty"
                  android:layout_width="wrap_content"
                  android:layout_height="wrap_content"/>
              <RadioButton
+                 android:id="@+id/pickup_full"
                  android:text="@string/pickup_full"
                  android:layout_width="wrap_content"
                  android:layout_height="wrap_content"/>
              <RadioButton
+                 android:id="@+id/deliver_empty"
                  android:text="@string/deliver_empty"
                  android:layout_width="wrap_content"
                  android:layout_height="wrap_content"/>
              <RadioButton
-
+                 android:id="@+id/deliver_full"
                  android:text="@string/deliver_full"
                  android:layout_width="wrap_content"
                  android:layout_height="wrap_content"/>

@@ -1,0 +1,13 @@
+CREATE TABLE IF NOT EXISTS trips 
+(trip_id integer primary key autoincrement,
+trip_type text not null,
+type text not null, 
+truck_id integer not null, 
+latitude real not null,
+ longitude real not null,
+  time text not null);
+
+
+//examples
+ insert into trips (truck_id, trip_type, type, latitude, longitude, time)
+ values(1, "pick up", "start", 10, 138, "12/24/2014 3:50:40");

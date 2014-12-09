@@ -41,15 +41,23 @@ public class LoginFragment extends Fragment {
 
 
 				//getActivity().startActivity(i);
-                FragmentManager fragmentManager2 = getFragmentManager();
-                FragmentTransaction fragmentTransaction2 = fragmentManager2.beginTransaction();
-                NewTripFragment fragment2 = new NewTripFragment();
+                if(!MainActivity.isRunning) {
+                    FragmentManager fragmentManager2 = getFragmentManager();
+                    FragmentTransaction fragmentTransaction2 = fragmentManager2.beginTransaction();
+                    NewTripFragment fragment2 = new NewTripFragment();
 
-                //What is happening with replace is that
-                //remove(fragment1).add(fragment2)
-                fragmentTransaction2.replace(R.id.container, fragment2);
-                fragmentTransaction2.addToBackStack(null);
-                fragmentTransaction2.commit();
+                    //What is happening with replace is that
+                    //remove(fragment1).add(fragment2)
+                    fragmentTransaction2.replace(R.id.container, fragment2);
+                    fragmentTransaction2.addToBackStack(null);
+                    fragmentTransaction2.commit();
+                } else {
+                    FragmentManager fm = getFragmentManager();
+                    FragmentTransaction frt = fm.beginTransaction();
+                    StatusFragment sfm = new StatusFragment();
+                    frt.replace(R.id.container, sfm);
+                    frt.commit();
+                }
 
             }
 		});
@@ -65,6 +73,11 @@ public class LoginFragment extends Fragment {
 
 		return rootView;
 	}
+
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//    }
 }
 
 
