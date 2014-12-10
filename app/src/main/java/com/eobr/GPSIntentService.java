@@ -64,7 +64,7 @@ public class GPSIntentService extends Service implements LocationListener {
         localIntent.putExtra("longitude", location.getLongitude());
         LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
         locationManager.removeUpdates(this);
-        this.onDestroy();
+        this.stopSelf();
     }
 
     @Override

@@ -161,6 +161,7 @@
     <string name="abc_toolbar_collapse_description">Collapse</string>
     <!-- From: file:/Users/byung/AndroidstudioProjects/EOBR/app/src/main/res/values/strings.xml -->
     <eat-comment/>
+    <string name="action_back_to_status">To Status</string>
     <string name="action_home">Home</string>
     <string name="action_new_trip">New Trip</string>
     <string name="action_settings">Settings</string>

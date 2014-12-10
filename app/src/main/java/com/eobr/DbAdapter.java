@@ -11,16 +11,17 @@ public class DbAdapter extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "eobrdb";
     private static final String TABLE_NAME = "trips";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private Context mContext;
     private SQLiteDatabase mDb;
 
 
     private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS trips \n" +
-            "(trip_id integer primary key autoincrement,\n" +
+            "(id integer primary key autoincrement,\n" +
+            "trip_id integer not null,\n" +
+            "truck_id text not null,\n" +
             "trip_type text not null,\n" +
             "type text not null, \n" +
-            "truck_id integer not null, \n" +
             "latitude real not null,\n" +
             " longitude real not null,\n" +
             "  time text not null);";

@@ -3,9 +3,11 @@ package com.eobr;
 import android.app.Activity;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.sqlite.SQLiteDatabase;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -21,14 +23,17 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-public class NewTripFragment extends Fragment implements GPSListener {
+import java.util.List;
+import java.util.Locale;
 
+public class NewTripFragment extends Fragment implements GPSListener {
 
     private Button mStartButton;
     private TextView mOriginTextView;
     private GPSReceiver mGpsReceiver;
     private RadioButton mPickUpEmpty;
     private RadioGroup mTripTypeRadio;
+    private Context mContext;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -77,7 +82,7 @@ public class NewTripFragment extends Fragment implements GPSListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_new_trip, container, false);
-
+        mContext = getActivity().getApplicationContext();
         mOriginTextView = (TextView) v.findViewById(R.id.origin_text);
         mGpsReceiver = new GPSReceiver(this);
         mPickUpEmpty = (RadioButton) v.findViewById(R.id.pickup_empty);
@@ -109,8 +114,8 @@ public class NewTripFragment extends Fragment implements GPSListener {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-                Intent gpsService = new Intent(getActivity().getApplicationContext(), GPSService.class);
-                getActivity().startService(gpsService);
+                MainActivity.GPSIntent = new Intent(getActivity().getApplicationContext(), GPSService.class);
+                getActivity().startService(MainActivity.GPSIntent);
 
                 FragmentManager fm = getFragmentManager();
                 FragmentTransaction frt = fm.beginTransaction();
@@ -146,15 +151,35 @@ public class NewTripFragment extends Fragment implements GPSListener {
     }
 
     @Override
-    public void execute(String str, double latitude, double longitude) {
+    public void execute(MyLocation location) {
 
     }
     private MyLocation ml;
     @Override
     public void executeForSingle(String str, double latitude, double longitude) {
         ml = new MyLocation(str, latitude, longitude);
-        mOriginTextView.setText(latitude + " " + longitude);
+        try{
+            Log.i("NewTrip", latitude + " " + longitude);
+            Geocoder geo = new Geocoder(mContext, Locale.getDefault());
+            List<Address> addresses = geo.getFromLocation(latitude, longitude, 1);
+            if (addresses.isEmpty()) {
+                mOriginTextView.setText("Waiting for Location");
+            }
+            else {
+                mOriginTextView.setText(addresses.get(0).getAddressLine(0) + ", " +
+                        addresses.get(0).getLocality() +", " +
+                        addresses.get(0).getAdminArea() + ", " +
+                        addresses.get(0).getCountryName());
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //mOriginTextView.setText(latitude + " " + longitude);
+
     }
+
 
     // TODO: Rename method, update argument and hook method into UI event
 //    public void onButtonPressed(Uri uri) {

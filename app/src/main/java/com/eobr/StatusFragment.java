@@ -4,6 +4,7 @@ package com.eobr;
 
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -115,7 +115,7 @@ public class StatusFragment extends Fragment implements GPSListener {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
-                i.putExtra("type", "origin_wait");
+                i.putExtra("type", "origin_waiting_at_the_gate");
                 getActivity().startService(i);
             }
         });
@@ -124,7 +124,7 @@ public class StatusFragment extends Fragment implements GPSListener {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
-                i.putExtra("type", "origin_terminal");
+                i.putExtra("type", "origin_terminal_gate_closed");
                 getActivity().startService(i);
             }
         });
@@ -133,7 +133,7 @@ public class StatusFragment extends Fragment implements GPSListener {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
-                i.putExtra("type", "origin_paper");
+                i.putExtra("type", "origin_filling_out_paperwork");
                 getActivity().startService(i);
             }
         });
@@ -142,7 +142,7 @@ public class StatusFragment extends Fragment implements GPSListener {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
-                i.putExtra("type", "destin_wait");
+                i.putExtra("type", "destin_waiting_at_the_gate");
                 getActivity().startService(i);
             }
         });
@@ -151,7 +151,7 @@ public class StatusFragment extends Fragment implements GPSListener {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
-                i.putExtra("type", "destin_terminal");
+                i.putExtra("type", "destin_terminal_gate_closed");
                 getActivity().startService(i);
             }
         });
@@ -160,7 +160,7 @@ public class StatusFragment extends Fragment implements GPSListener {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
-                i.putExtra("type", "destin_paper");
+                i.putExtra("type", "destin_filling_out_paperwork");
                 getActivity().startService(i);
             }
         });
@@ -187,7 +187,7 @@ public class StatusFragment extends Fragment implements GPSListener {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
-                i.putExtra("type", "road_equipment");
+                i.putExtra("type", "road_equipment_problem");
                 getActivity().startService(i);
             }
         });
@@ -205,6 +205,10 @@ public class StatusFragment extends Fragment implements GPSListener {
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(
                 gpsReceiver,
                 mLocationOnceFilter);
+
+        if(!MainActivity.myLocationList.isEmpty())
+            mDetailStatusTextView.setText(getListString());
+
         return v;
     }
 
@@ -231,9 +235,30 @@ public class StatusFragment extends Fragment implements GPSListener {
     }
 
     @Override
-    public void execute(String str, double latitude, double longitude) {
-        Log.i(TAG, str + " " + latitude + " " + longitude );
+    public void execute(MyLocation location) {
+        Log.i(TAG, location.getType() + " " + location.getLatitude() + " " + location.getLongitude());
         mDetailStatusTextView.setText(getListString());
+        DbAdapter db = new DbAdapter(getActivity().getApplicationContext());
+
+
+        if(MainActivity.CURRENT_TRIP_ID == -1) {
+            SQLiteDatabase sqlDb = db.getReadableDatabase();
+            String query="select trip_id from trips order by trip_id desc";
+            Cursor curs=sqlDb.rawQuery(query, null);
+            curs.moveToFirst();
+            if(curs.getCount() != 0) {
+                MainActivity.CURRENT_TRIP_ID = curs.getInt(0);
+            } else
+                MainActivity.CURRENT_TRIP_ID = 1;
+            curs.close();
+        }
+
+        SQLiteDatabase sqlDb = db.getWritableDatabase();
+        sqlDb.execSQL("insert into trips (trip_id, truck_id, trip_type, type, latitude, longitude, time) " +
+                "values (" + MainActivity.CURRENT_TRIP_ID + ", \"" +MainActivity.TRUCK_ID + "\", \"" + MainActivity.tripType + "\", \"" + location.getType() + "\", " +
+                location.getLatitude() + ", " + location.getLongitude() + ", \"" + location.getTimeString() + "\")");
+        sqlDb.close();
+        db.close();
     }
 
     @Override
@@ -245,10 +270,19 @@ public class StatusFragment extends Fragment implements GPSListener {
         DbAdapter db = new DbAdapter(getActivity().getApplicationContext());
         SQLiteDatabase sqlDb = db.getWritableDatabase();
         Log.i(TAG, "Checking time string " + location.getTimeString());
-        sqlDb.execSQL("insert into trips (truck_id, trip_type, type, latitude, longitude, time) " +
-                "values ("+MainActivity.TRUCK_ID + ", \"" + MainActivity.tripType + "\", " +
+        sqlDb.execSQL("insert into trips (trip_id, truck_id, trip_type, type, latitude, longitude, time) " +
+                "values (" + MainActivity.CURRENT_TRIP_ID + ", \"" +MainActivity.TRUCK_ID + "\", \"" + MainActivity.tripType + "\", \"" +
+                location.getType() + "\", " +
                 location.getLatitude() + ", " + location.getLongitude() + ", \"" + location.getTimeString() + "\")");
         Log.i(TAG, str + " " + latitude + " " + longitude );
+        sqlDb.close();
+        db.close();
         mDetailStatusTextView.setText(getListString());
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(gpsReceiver);
     }
 }

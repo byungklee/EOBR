@@ -11,13 +11,14 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class LoginFragment extends Fragment {
 
 	private Button startButton;
 	private Button stopButton;
-
+    private TextView mStartButtonText;
 	
 	public LoginFragment() {
 		
@@ -30,7 +31,13 @@ public class LoginFragment extends Fragment {
 				false);
 		
 		startButton = (Button) rootView.findViewById(R.id.start_button);
+
 		stopButton = (Button) rootView.findViewById(R.id.stop_button);
+
+        mStartButtonText = (TextView) rootView.findViewById(R.id.start_button_text);
+        if(MainActivity.isRunning) {
+            mStartButtonText.setText("To Status");
+        }
 		
 		startButton.setOnClickListener(new OnClickListener() {
 			
@@ -56,6 +63,7 @@ public class LoginFragment extends Fragment {
                     FragmentTransaction frt = fm.beginTransaction();
                     StatusFragment sfm = new StatusFragment();
                     frt.replace(R.id.container, sfm);
+                    frt.addToBackStack(null);
                     frt.commit();
                 }
 
@@ -67,17 +75,20 @@ public class LoginFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				Toast.makeText(getActivity().getApplicationContext(), "df", Toast.LENGTH_SHORT).show();
+                if(MainActivity.isRunning) {
+                    Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
+                    i.putExtra("type", "stop");
+                    getActivity().startService(i);
+                    mStartButtonText.setText("Start Trip");
+                } else {
+                    Toast.makeText(getActivity().getApplicationContext(), "There is no running trip.", Toast.LENGTH_SHORT).show();
+                }
 			}
 		});
 
 		return rootView;
 	}
 
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//    }
 }
 
 

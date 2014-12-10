@@ -32,7 +32,7 @@ public class GPSService extends Service implements LocationListener {
         super.onStart(intent, startId);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         //requestionLocationUpdates(Provider, Min_Time in millisecond, Min_Distance in meter, listener)
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, this);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, this);
         Log.i(TAG, "Gps Service Enabled");
         Toast.makeText(getApplicationContext(), "GPS Service Enabled", Toast.LENGTH_SHORT).show();
         isFirst = true;
@@ -59,10 +59,9 @@ public class GPSService extends Service implements LocationListener {
         Intent localIntent= new Intent(Constants.BROAD_CAST_LOCATION);
 
         localIntent.putExtra("type", isFirst ? "start" : type);
-        isFirst = false;
-
         localIntent.putExtra("latitude", location.getLatitude());
         localIntent.putExtra("longitude", location.getLongitude());
+        isFirst = false;
         LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
     }
 

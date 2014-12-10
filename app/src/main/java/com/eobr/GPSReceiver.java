@@ -34,9 +34,7 @@ public class GPSReceiver extends BroadcastReceiver {
                     intent.getDoubleExtra("latitude", 0),
                     intent.getDoubleExtra("longitude", 0));
             MainActivity.myLocationList.add(location);
-
-
-            gpsListener.execute(location.getType(), location.getLatitude(), location.getLongitude());
+            gpsListener.execute(location);
         } else if(intent.getAction().equals(Constants.BROAD_CAST_LOCATION_ONCE)) {
             MyLocation location = new MyLocation(intent.getStringExtra("type"),
                     intent.getDoubleExtra("latitude", 0),
@@ -44,7 +42,6 @@ public class GPSReceiver extends BroadcastReceiver {
 
             gpsListener.executeForSingle(location.getType(), location.getLatitude(), location.getLongitude());
         }
-        //throw new UnsupportedOperationException("Not yet implemented");
     }
 
     public List getLocationList() {

@@ -11,6 +11,7 @@
     <string name="action_stop_trip">Stop Trip</string>
     <string name="action_view_trip">View Trip</string>
     <string name="action_new_trip">New Trip</string>
+    <string name="action_back_to_status">To Status</string>
 
     <!-- New Trip -->
     <string name="origin">Origin</string>
