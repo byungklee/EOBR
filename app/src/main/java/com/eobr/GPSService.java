@@ -32,7 +32,7 @@ public class GPSService extends Service implements LocationListener {
         super.onStart(intent, startId);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         //requestionLocationUpdates(Provider, Min_Time in millisecond, Min_Distance in meter, listener)
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, this);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 1, this);
         Log.i(TAG, "Gps Service Enabled");
         Toast.makeText(getApplicationContext(), "GPS Service Enabled", Toast.LENGTH_SHORT).show();
         isFirst = true;
@@ -41,7 +41,6 @@ public class GPSService extends Service implements LocationListener {
     public void onDestroy() {
         Log.i("GPSService", "GPSService stopped!");
         locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
         locationManager.removeUpdates(this);
         super.onDestroy();
     }

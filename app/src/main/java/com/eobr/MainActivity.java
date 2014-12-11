@@ -1,5 +1,8 @@
 package com.eobr;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,6 +14,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -216,7 +220,51 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
             stopService(MainActivity.GPSIntent);
             CURRENT_TRIP_ID = -1;
             isRunning = false;
+            //createKMLFile(myLocationList);
             myLocationList.clear();
         }
+    }
+
+    public void createKMLFile(List<MyLocation> locationList) {
+        //FileOutputStream outputStream;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n" +
+                "\t<Document>\n");
+
+        for(MyLocation ml:locationList) {
+            int i = 1;
+            sb.append("\t\t<Placemark>\n")
+                    .append("\t\t\t<name>").append("point").append(i).append("</name>\n")
+                    .append("\t\t\t<description>").append(ml.getType()).append("</description>\n")
+                    .append("\t\t\t<point>\n")
+                    .append("\t\t\t\t<coordinates>").append(ml.getLatitude()).append(",").append(ml.getLongitude()).append("</coordinates>")
+                    .append("\t\t\t</point>\n</Placemark>\n");
+        }
+        sb.append("\t</Document>\n" +
+                "</kml>\n");
+        //String filename = "myfile";
+        if(isExternalStorageWritable()) {
+
+        } else {
+            FileOutputStream outputStream;
+            String filename = MainActivity.TRUCK_ID + " " + MainActivity.CURRENT_TRIP_ID + ".kml";
+            try {
+                outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+                outputStream.write(sb.toString().getBytes());
+                outputStream.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            return true;
+        }
+        return false;
     }
 }

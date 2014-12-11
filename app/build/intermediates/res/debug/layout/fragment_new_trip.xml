@@ -16,8 +16,8 @@
              android:textSize="24sp"
              />
          <TextView
-             android:layout_width="144dp"
-             android:layout_height="wrap_content"
+             android:layout_width="300dp"
+             android:layout_height="50dp"
              android:layout_toRightOf="@+id/origin"
              android:layout_alignTop="@+id/origin"
              android:id="@+id/origin_text"

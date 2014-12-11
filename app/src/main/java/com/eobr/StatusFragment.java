@@ -221,8 +221,8 @@ public class StatusFragment extends Fragment implements GPSListener {
 //            sb.append(ml.getLatitude()).append(" ").append(ml.getLongitude()).append(" ").append(ml.getTimeString()).append("\n");
 //        }
         int size = MainActivity.myLocationList.size();
-        if(size > 5) {
-            for(int i=size - 5;i<size;i++) {
+        if(size > 3) {
+            for(int i=size - 3;i<size;i++) {
                 MyLocation ml = MainActivity.myLocationList.get(i);
                 sb.append(ml.getType() + " ").append(ml.getLatitude()).append(" ").append(ml.getLongitude()).append(" ").append(ml.getTimeString()).append("\n");
             }
