@@ -7,6 +7,7 @@ import android.text.format.Time;
  */
 public class MyLocation {
     private String type;
+    private String note;
     private double latitude;
     private double longitude;
     private Time time;
@@ -17,8 +18,8 @@ public class MyLocation {
         this.setLongitude(longitude);
         time = new Time();
         time.setToNow();
+        note = "";
     }
-
 
     public double getLatitude() {
         return latitude;
@@ -59,5 +60,13 @@ public class MyLocation {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 }

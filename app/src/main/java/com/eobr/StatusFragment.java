@@ -211,15 +211,8 @@ public class StatusFragment extends Fragment implements GPSListener {
 
         return v;
     }
-
-
-
-
     public String getListString() {
         StringBuilder sb = new StringBuilder();
-//        for(MyLocation ml : MainActivity.myLocationList) {
-//            sb.append(ml.getLatitude()).append(" ").append(ml.getLongitude()).append(" ").append(ml.getTimeString()).append("\n");
-//        }
         int size = MainActivity.myLocationList.size();
         if(size > 3) {
             for(int i=size - 3;i<size;i++) {
@@ -262,18 +255,21 @@ public class StatusFragment extends Fragment implements GPSListener {
     }
 
     @Override
-    public void executeForSingle(String str, double latitude, double longitude) {
+    public void executeForSingle(String str, double latitude, double longitude, String note) {
         MyLocation location = new MyLocation(str,
                 latitude,
                 longitude);
+        if(note != null) {
+            location.setNote(note);
+        }
         MainActivity.myLocationList.add(location);
         DbAdapter db = new DbAdapter(getActivity().getApplicationContext());
         SQLiteDatabase sqlDb = db.getWritableDatabase();
         Log.i(TAG, "Checking time string " + location.getTimeString());
-        sqlDb.execSQL("insert into trips (trip_id, truck_id, trip_type, type, latitude, longitude, time) " +
+        sqlDb.execSQL("insert into trips (trip_id, truck_id, trip_type, type, latitude, longitude, time, note) " +
                 "values (" + MainActivity.CURRENT_TRIP_ID + ", \"" +MainActivity.TRUCK_ID + "\", \"" + MainActivity.tripType + "\", \"" +
                 location.getType() + "\", " +
-                location.getLatitude() + ", " + location.getLongitude() + ", \"" + location.getTimeString() + "\")");
+                location.getLatitude() + ", " + location.getLongitude() + ", \"" + location.getTimeString() + "\", \"" + location.getNote() + "\")");
         Log.i(TAG, str + " " + latitude + " " + longitude );
         sqlDb.close();
         db.close();

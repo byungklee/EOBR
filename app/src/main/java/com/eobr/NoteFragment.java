@@ -1,13 +1,16 @@
 package com.eobr;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 /**
@@ -18,7 +21,8 @@ import android.widget.TextView;
 public class NoteFragment extends Fragment {
 
     private Button mCancelButton;
-
+    private Button mSaveButton;
+    private EditText mEditText;
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -56,10 +60,28 @@ public class NoteFragment extends Fragment {
         mCancelButton.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
+                 Toast.makeText(getActivity().getApplicationContext(), "" + getFragmentManager().getBackStackEntryCount(), Toast.LENGTH_SHORT).show();
                  getFragmentManager().popBackStack();
              }
             }
         );
+
+        mEditText = (EditText) v.findViewById(R.id.note);
+
+
+
+        mSaveButton = (Button) v.findViewById(R.id.save_button);
+        mSaveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String text = mEditText.getText().toString();
+                Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
+                i.putExtra("type", "note");
+                i.putExtra("note", text);
+                getActivity().startService(i);
+                getFragmentManager().popBackStack();
+            }
+        });
 
         return v;
     }

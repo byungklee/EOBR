@@ -156,7 +156,7 @@ public class NewTripFragment extends Fragment implements GPSListener {
     }
     private MyLocation ml;
     @Override
-    public void executeForSingle(String str, double latitude, double longitude) {
+    public void executeForSingle(String str, double latitude, double longitude, String note) {
         ml = new MyLocation(str, latitude, longitude);
         try{
             Log.i("NewTrip", latitude + " " + longitude);

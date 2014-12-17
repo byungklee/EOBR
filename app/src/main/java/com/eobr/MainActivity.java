@@ -1,8 +1,10 @@
 package com.eobr;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
+
 import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
@@ -140,13 +142,18 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
 
 				break;
 			case R.id.action_new_trip:
-                if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                index = getSupportFragmentManager().getBackStackEntryCount();
+                while(index > 0) {
+
                     getSupportFragmentManager().popBackStack();
                     removeCurrentFragment();
+                    index--;
                 }
                 if(MainActivity.isRunning) {
                     Toast.makeText(getApplicationContext(), "There is currently a running trip.", Toast.LENGTH_SHORT).show();
+
                 } else {
+
                     FragmentManager fragmentManager2 = getSupportFragmentManager();
                     FragmentTransaction fragmentTransaction2 = fragmentManager2.beginTransaction();
                     NewTripFragment fragment2 = new NewTripFragment();
@@ -158,24 +165,12 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
 				break;
 			case R.id.action_view_trip:
 				Toast.makeText(getApplicationContext(), "View", Toast.LENGTH_SHORT).show();
-                if(MainActivity.isRunning) {
-                    if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-                        getSupportFragmentManager().popBackStack();
-                        removeCurrentFragment();
-                    }
-
-                    FragmentManager fm = getSupportFragmentManager();
-                    FragmentTransaction frt = fm.beginTransaction();
-                    StatusFragment sfm = new StatusFragment();
-                    frt.replace(R.id.container, sfm);
-                    frt.addToBackStack(null);
-                    frt.commit();
-                } else {
-                    Toast.makeText(getApplicationContext(), "There is no running trip.", Toast.LENGTH_SHORT).show();
-                }
+                viewTrip();
 				break;
             case R.id.action_stop_trip:
                 if(MainActivity.isRunning) {
+
+                    isRunning = false;
                     Intent i = new Intent(getApplicationContext(), GPSIntentService.class);
                     i.putExtra("type", "stop");
                     startService(i);
@@ -197,8 +192,26 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
 
     }
 
+    public void viewTrip() {
+        if(MainActivity.isRunning) {
+            if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                getSupportFragmentManager().popBackStack();
+                removeCurrentFragment();
+            }
+
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction frt = fm.beginTransaction();
+            StatusFragment sfm = new StatusFragment();
+            frt.replace(R.id.container, sfm);
+            frt.addToBackStack(null);
+            frt.commit();
+        } else {
+            Toast.makeText(getApplicationContext(), "There is no running trip.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     @Override
-    public void executeForSingle(String type, double latitude, double longitude) {
+    public void executeForSingle(String type, double latitude, double longitude, String note) {
         if(type == null) {
             return;
         }
@@ -206,6 +219,7 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
             MyLocation location = new MyLocation(type,
                     latitude,
                     longitude);
+            location.setNote(note);
             MainActivity.myLocationList.add(location);
             DbAdapter db = new DbAdapter(getApplicationContext());
             SQLiteDatabase sqlDb = db.getWritableDatabase();
@@ -217,10 +231,9 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
             Log.i(TAG, type + " " + latitude + " " + longitude);
             sqlDb.close();
             db.close();
-            stopService(MainActivity.GPSIntent);
             CURRENT_TRIP_ID = -1;
-            isRunning = false;
-            //createKMLFile(myLocationList);
+            stopService(MainActivity.GPSIntent);
+            createKMLFile(myLocationList);
             myLocationList.clear();
         }
     }
@@ -244,12 +257,26 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
         }
         sb.append("\t</Document>\n" +
                 "</kml>\n");
-        //String filename = "myfile";
+        String filename = MainActivity.TRUCK_ID + " " + MainActivity.CURRENT_TRIP_ID + ".kml";
         if(isExternalStorageWritable()) {
+            File sdCard = Environment.getExternalStorageDirectory();
+            File dir = new File (sdCard.getAbsolutePath() + "/eobr");
+            Log.i("Main", dir.getAbsolutePath());
+            dir.mkdirs();
+            File file = new File(dir, filename);
+            try {
+                FileOutputStream f = new FileOutputStream(file);
+                f.write(sb.toString().getBytes());
+                f.close();
+            } catch(FileNotFoundException e) {
+                 Log.e(TAG, e.getLocalizedMessage());
+            } catch(IOException e) {
+                Log.e(TAG, e.getLocalizedMessage());
+            }
 
         } else {
             FileOutputStream outputStream;
-            String filename = MainActivity.TRUCK_ID + " " + MainActivity.CURRENT_TRIP_ID + ".kml";
+
             try {
                 outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
                 outputStream.write(sb.toString().getBytes());
@@ -267,4 +294,6 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
         }
         return false;
     }
+
+
 }

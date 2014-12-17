@@ -42,10 +42,12 @@ public class GPSIntentService extends Service implements LocationListener {
 //    }
 
     private String type;
+    private String note;
 
     public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
         type = intent.getStringExtra("type");
+        note = intent.getStringExtra("note");
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         //requestionLocationUpdates(Provider, Min_Time in millisecond, Min_Distance in meter, listener)
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
@@ -62,6 +64,7 @@ public class GPSIntentService extends Service implements LocationListener {
         localIntent.putExtra("type", type);
         localIntent.putExtra("latitude", location.getLatitude());
         localIntent.putExtra("longitude", location.getLongitude());
+        localIntent.putExtra("note", note);
         LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
         locationManager.removeUpdates(this);
         this.stopSelf();

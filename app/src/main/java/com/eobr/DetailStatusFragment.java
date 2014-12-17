@@ -3,6 +3,7 @@ package com.eobr;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,9 +21,7 @@ public class DetailStatusFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private TextView textview;
 
 
     /**
@@ -50,16 +49,21 @@ public class DetailStatusFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.detail_status, container, false);
+        textview = (TextView) v.findViewById(R.id.log_textview);
+        textview.setMovementMethod(new ScrollingMovementMethod());
+        StringBuilder sb = new StringBuilder();
+        for(MyLocation ml : MainActivity.myLocationList) {
+            sb.append(ml.getType() + " ").append(ml.getLatitude()).append(" ").append(ml.getLongitude()).append(" ").append(ml.getTimeString()).append("\n");
+        }
+        textview.setText(sb.toString());
+
         return v;
     }
 

@@ -45,8 +45,6 @@ public class LoginFragment extends Fragment {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				//Intent i = new Intent(getActivity().getApplicationContext(), NewTripActivity.class);
-
-
 				//getActivity().startActivity(i);
                 if(!MainActivity.isRunning) {
                     FragmentManager fragmentManager2 = getFragmentManager();

@@ -39,8 +39,14 @@ public class GPSReceiver extends BroadcastReceiver {
             MyLocation location = new MyLocation(intent.getStringExtra("type"),
                     intent.getDoubleExtra("latitude", 0),
                     intent.getDoubleExtra("longitude", 0));
+            String noteTemp = intent.getStringExtra("note");
+            if(noteTemp != null) {
+                gpsListener.executeForSingle(location.getType(), location.getLatitude(), location.getLongitude(), noteTemp);
+            } else {
+                gpsListener.executeForSingle(location.getType(), location.getLatitude(), location.getLongitude(), null);
+            }
 
-            gpsListener.executeForSingle(location.getType(), location.getLatitude(), location.getLongitude());
+
         }
     }
 
