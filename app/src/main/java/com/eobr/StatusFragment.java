@@ -41,16 +41,7 @@ public class StatusFragment extends Fragment implements GPSListener {
 
     private TextView mDetailStatusTextView;
     private GPSReceiver gpsReceiver;
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
+    private LocationList locationList;
 
     /**
      * Use this factory method to create a new instance of
@@ -64,8 +55,7 @@ public class StatusFragment extends Fragment implements GPSListener {
     public static StatusFragment newInstance(String param1, String param2) {
         StatusFragment fragment = new StatusFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -77,10 +67,7 @@ public class StatusFragment extends Fragment implements GPSListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
     }
 
     @Override
@@ -206,21 +193,23 @@ public class StatusFragment extends Fragment implements GPSListener {
                 gpsReceiver,
                 mLocationOnceFilter);
 
-        if(!MainActivity.myLocationList.isEmpty())
+        locationList = LocationList.getInstance();
+
+        if(!locationList.isEmpty())
             mDetailStatusTextView.setText(getListString());
 
         return v;
     }
     public String getListString() {
         StringBuilder sb = new StringBuilder();
-        int size = MainActivity.myLocationList.size();
+        int size = locationList.size();
         if(size > 3) {
             for(int i=size - 3;i<size;i++) {
-                MyLocation ml = MainActivity.myLocationList.get(i);
+                MyLocation ml = locationList.get(i);
                 sb.append(ml.getType() + " ").append(ml.getLatitude()).append(" ").append(ml.getLongitude()).append(" ").append(ml.getTimeString()).append("\n");
             }
         } else {
-            for(MyLocation ml : MainActivity.myLocationList) {
+            for(MyLocation ml :locationList.getList()) {
             sb.append(ml.getType() + " ").append(ml.getLatitude()).append(" ").append(ml.getLongitude()).append(" ").append(ml.getTimeString()).append("\n");
          }
         }
@@ -262,7 +251,7 @@ public class StatusFragment extends Fragment implements GPSListener {
         if(note != null) {
             location.setNote(note);
         }
-        MainActivity.myLocationList.add(location);
+        locationList.add(location);
         DbAdapter db = new DbAdapter(getActivity().getApplicationContext());
         SQLiteDatabase sqlDb = db.getWritableDatabase();
         Log.i(TAG, "Checking time string " + location.getTimeString());

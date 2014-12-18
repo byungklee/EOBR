@@ -30,7 +30,7 @@ import android.widget.Toast;
 
 public class MainActivity extends ActionBarActivity implements GPSListener {
 
-    public static List<MyLocation> myLocationList = new LinkedList<MyLocation>();
+    //public static List<MyLocation> myLocationList = new LinkedList<MyLocation>();
     public static boolean isRunning = false;
     public static String tripType = "";
     public static String TRUCK_ID = "1";
@@ -220,7 +220,9 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
                     latitude,
                     longitude);
             location.setNote(note);
-            MainActivity.myLocationList.add(location);
+            //MainActivity.myLocationList.add(location);
+            LocationList locationList = LocationList.getInstance();
+            locationList.add(location);
             DbAdapter db = new DbAdapter(getApplicationContext());
             SQLiteDatabase sqlDb = db.getWritableDatabase();
             Log.i(TAG, "Checking time string " + location.getTimeString());
@@ -233,8 +235,8 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
             db.close();
             CURRENT_TRIP_ID = -1;
             stopService(MainActivity.GPSIntent);
-            createKMLFile(myLocationList);
-            myLocationList.clear();
+            createKMLFile(locationList.getList());
+            locationList.clear();
         }
     }
 

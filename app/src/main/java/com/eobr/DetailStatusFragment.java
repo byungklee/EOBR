@@ -59,7 +59,7 @@ public class DetailStatusFragment extends Fragment {
         textview = (TextView) v.findViewById(R.id.log_textview);
         textview.setMovementMethod(new ScrollingMovementMethod());
         StringBuilder sb = new StringBuilder();
-        for(MyLocation ml : MainActivity.myLocationList) {
+        for(MyLocation ml : LocationList.getInstance().getList()) {
             sb.append(ml.getType() + " ").append(ml.getLatitude()).append(" ").append(ml.getLongitude()).append(" ").append(ml.getTimeString()).append("\n");
         }
         textview.setText(sb.toString());

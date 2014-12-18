@@ -33,7 +33,8 @@ public class GPSReceiver extends BroadcastReceiver {
             MyLocation location = new MyLocation(intent.getStringExtra("type"),
                     intent.getDoubleExtra("latitude", 0),
                     intent.getDoubleExtra("longitude", 0));
-            MainActivity.myLocationList.add(location);
+            LocationList ll = LocationList.getInstance();
+            ll.add(location);
             gpsListener.execute(location);
         } else if(intent.getAction().equals(Constants.BROAD_CAST_LOCATION_ONCE)) {
             MyLocation location = new MyLocation(intent.getStringExtra("type"),
