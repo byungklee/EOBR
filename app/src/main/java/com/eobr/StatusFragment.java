@@ -229,7 +229,7 @@ public class StatusFragment extends Fragment implements GPSListener {
             Cursor curs=sqlDb.rawQuery(query, null);
             curs.moveToFirst();
             if(curs.getCount() != 0) {
-                MainActivity.CURRENT_TRIP_ID = curs.getInt(0);
+                MainActivity.CURRENT_TRIP_ID = curs.getInt(0)+1;
             } else
                 MainActivity.CURRENT_TRIP_ID = 1;
             curs.close();

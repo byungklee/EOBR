@@ -1,29 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<pre-dex-items>
+<items version="2" >
 
     <item
-        dex="/Users/byung/AndroidstudioProjects/EOBR/app/build/intermediates/pre-dexed/debug/classes-56c954cee70ae0a7817d2598966a81256cdf1645.jar"
-        jar="/Users/byung/AndroidstudioProjects/EOBR/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.2/classes.jar"
-        jumboMode="false"
-        revision="21.1.1"
-        sha1="d1bf02de1c56d942e7a9d093b8610ba1ef4128e3"/>
-    <item
-        dex="/Users/byung/AndroidstudioProjects/EOBR/app/build/intermediates/pre-dexed/debug/classes-9ef927deb759d02dcec57980ada748874c687261.jar"
-        jar="/Users/byung/AndroidstudioProjects/EOBR/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.2/classes.jar"
-        jumboMode="false"
-        revision="21.1.1"
-        sha1="7ae2d38807a43b2f2185ff4089a92c790b579e54"/>
-    <item
-        dex="/Users/byung/AndroidstudioProjects/EOBR/app/build/intermediates/pre-dexed/debug/internal_impl-21.0.2-ab7decfea4a06968cfd9be1b9878c33c4e4b9167.jar"
-        jar="/Users/byung/AndroidstudioProjects/EOBR/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.2/libs/internal_impl-21.0.2.jar"
-        jumboMode="false"
-        revision="21.1.1"
-        sha1="962e8b12569c56dbdcf8367eb4eac8bb129cd18f"/>
-    <item
-        dex="/Users/byung/AndroidstudioProjects/EOBR/app/build/intermediates/pre-dexed/debug/support-annotations-21.0.2-50631cea9e42308bc8aa3574786708184e3d1a22.jar"
         jar="/Users/byung/Applications/android-sdk/extras/android/m2repository/com/android/support/support-annotations/21.0.2/support-annotations-21.0.2.jar"
         jumboMode="false"
         revision="21.1.1"
-        sha1="99373741f99a0556ee293c41e8faa1ca3ae8a4e6"/>
+        sha1="99373741f99a0556ee293c41e8faa1ca3ae8a4e6">
+        <dex dex="/Users/byung/AndroidstudioProjects/EOBR/app/build/intermediates/pre-dexed/debug/support-annotations-21.0.2-50631cea9e42308bc8aa3574786708184e3d1a22.jar" />
+    </item>
+    <item
+        jar="/Users/byung/AndroidstudioProjects/EOBR/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.2/libs/internal_impl-21.0.2.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="962e8b12569c56dbdcf8367eb4eac8bb129cd18f">
+        <dex dex="/Users/byung/AndroidstudioProjects/EOBR/app/build/intermediates/pre-dexed/debug/internal_impl-21.0.2-ab7decfea4a06968cfd9be1b9878c33c4e4b9167.jar" />
+    </item>
+    <item
+        jar="/Users/byung/AndroidstudioProjects/EOBR/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.2/classes.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="7ae2d38807a43b2f2185ff4089a92c790b579e54">
+        <dex dex="/Users/byung/AndroidstudioProjects/EOBR/app/build/intermediates/pre-dexed/debug/classes-9ef927deb759d02dcec57980ada748874c687261.jar" />
+    </item>
+    <item
+        jar="/Users/byung/AndroidstudioProjects/EOBR/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.2/classes.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="d1bf02de1c56d942e7a9d093b8610ba1ef4128e3">
+        <dex dex="/Users/byung/AndroidstudioProjects/EOBR/app/build/intermediates/pre-dexed/debug/classes-56c954cee70ae0a7817d2598966a81256cdf1645.jar" />
+    </item>
 
-</pre-dex-items>
+</items>

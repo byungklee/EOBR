@@ -32,20 +32,6 @@
         android:paddingTop="48dp"
         >
 
-        <LinearLayout 
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="48dp"
-            android:orientation="vertical" >
-
-            <Button
-                android:id="@+id/start_button"
-                android:layout_width="144dp"
-                android:layout_height="144dp"
-                
-                android:background="@drawable/app_icon_start"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp" />
 
             <TextView
                 android:id="@+id/start_button_text"
@@ -53,8 +39,10 @@
                 android:layout_height="wrap_content" 
                 android:text="START TRIP"
                 android:gravity="center" 
-                android:textSize="24sp"/>
-        </LinearLayout>
+                android:textSize="24sp"
+                android:drawableTop="@drawable/app_icon_start"
+                />
+
 
         <LinearLayout
             android:layout_width="wrap_content"

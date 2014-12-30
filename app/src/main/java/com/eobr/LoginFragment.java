@@ -16,7 +16,7 @@ import android.widget.Toast;
 
 public class LoginFragment extends Fragment {
 
-	private Button startButton;
+	//private Button startButton;
 	private Button stopButton;
     private TextView mStartButtonText;
 	
@@ -30,7 +30,7 @@ public class LoginFragment extends Fragment {
 		View rootView = inflater.inflate(R.layout.fragment_login, container,
 				false);
 		
-		startButton = (Button) rootView.findViewById(R.id.start_button);
+		//startButton = (Button) rootView.findViewById(R.id.start_button);
 
 		stopButton = (Button) rootView.findViewById(R.id.stop_button);
 
@@ -39,7 +39,7 @@ public class LoginFragment extends Fragment {
             mStartButtonText.setText("To Status");
         }
 		
-		startButton.setOnClickListener(new OnClickListener() {
+		mStartButtonText.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {

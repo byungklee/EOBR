@@ -19,10 +19,6 @@ public class GPSReceiver extends BroadcastReceiver {
         this.gpsListener = gpsListener;
     }
 
-//    public MyReceiver(MainActivity.MyListener ml) {
-//
-//    }
-
     @Override
     public void onReceive(Context context, Intent intent) {
         // TODO: This method is called when the BroadcastReceiver is receiving
@@ -46,8 +42,6 @@ public class GPSReceiver extends BroadcastReceiver {
             } else {
                 gpsListener.executeForSingle(location.getType(), location.getLatitude(), location.getLongitude(), null);
             }
-
-
         }
     }
 

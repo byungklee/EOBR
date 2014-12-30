@@ -1,20 +1,24 @@
 package com.eobr;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
-import java.util.LinkedList;
 import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
@@ -28,6 +32,14 @@ import android.view.MenuItem;
 import android.view.ViewConfiguration;
 import android.widget.Toast;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class MainActivity extends ActionBarActivity implements GPSListener {
 
     //public static List<MyLocation> myLocationList = new LinkedList<MyLocation>();
@@ -37,6 +49,7 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
     public static int CURRENT_TRIP_ID = -1;
     public static Intent GPSIntent;
     private static final String TAG = "MainActivity";
+    private static final String serverIp = "http://192.168.0.56:8888";
     private static GPSReceiver gpsReceiver;
 
 
@@ -110,7 +123,6 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
             transaction.remove(currentFrag);
             transaction.commit();
         }
-
     }
 
 
@@ -215,6 +227,7 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
         if(type == null) {
             return;
         }
+        //when stop has been called
         if(type.equals("stop")) {
             MyLocation location = new MyLocation(type,
                     latitude,
@@ -233,11 +246,62 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
             Log.i(TAG, type + " " + latitude + " " + longitude);
             sqlDb.close();
             db.close();
-            CURRENT_TRIP_ID = -1;
+
             stopService(MainActivity.GPSIntent);
-            createKMLFile(locationList.getList());
-            locationList.clear();
+        //    createKMLFile(locationList.getList());
+           new HttpAsyncTask().execute(serverIp + "/add");
+
+
+            Log.i(TAG,createJSON().toString());
+
+            //locationList.clear();
         }
+    }
+    //Structure =
+    //trip_id/trip_id/truck_id/trip_type/type/latitude/longitude/time/description
+    public JSONObject createJSON() {
+        JSONObject jsonObject = new JSONObject();
+
+            DbAdapter db = new DbAdapter(getApplicationContext());
+            SQLiteDatabase sqlDb = db.getReadableDatabase();
+            Cursor cursor = sqlDb.rawQuery("select * from trips where trip_id=" + CURRENT_TRIP_ID + " order by id", null);
+
+
+            Log.i(TAG, "cusor count " + cursor.getCount());
+            if( cursor.getCount() < 1)
+                return null;
+            cursor.moveToFirst();
+
+
+//        0 id getint
+//        1 trip_id getint
+//        2 truck_id getString
+//        3 trip_type text
+//        4 type text
+//        5 latitude dobule
+//        6 longti dobule
+//        7 time text
+//        8 note text
+
+            do {
+                JSONObject tempJson = new JSONObject();
+                try {
+                    tempJson.put("id", cursor.getInt(0)); // id
+                    tempJson.put("trip_id", cursor.getInt(1)); // trip_id
+                    tempJson.put("truck_id", cursor.getString(2)); //truck_id
+                    tempJson.put("trip_type", cursor.getString(3)); // trip_type
+                    tempJson.put("type", cursor.getString(4)); //type
+                    tempJson.put("latitude", cursor.getDouble(5)); //latitude
+                    tempJson.put("longitude", cursor.getDouble(6)); // longtitude
+                    tempJson.put("time", cursor.getString(7)); // time
+                    tempJson.put("note", cursor.getString(8)); // note
+                    jsonObject.accumulate("record", tempJson);
+                } catch (JSONException e) {
+                    Log.d(TAG, e.getLocalizedMessage());
+                }
+            } while(cursor.moveToNext());
+        Log.i(TAG, jsonObject.toString());
+        return jsonObject;
     }
 
     public void createKMLFile(List<MyLocation> locationList) {
@@ -297,5 +361,82 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
         return false;
     }
 
+    public static String POST(String url, JSONObject jsonObj){
+        InputStream inputStream = null;
+        String result = "";
+        try {
 
+            // 1. create HttpClient
+            HttpClient httpclient = new DefaultHttpClient();
+
+            // 2. make POST request to the given URL
+            HttpPost httpPost = new HttpPost(url);
+            String json = "";
+
+            // 3. build jsonObject
+
+            // 4. convert JSONObject to JSON to String
+            json = jsonObj.toString();
+
+            // ** Alternative way to convert Person object to JSON string usin Jackson Lib
+            // ObjectMapper mapper = new ObjectMapper();
+            // json = mapper.writeValueAsString(person);
+
+            // 5. set json to StringEntity
+            StringEntity se = new StringEntity(json);
+
+            // 6. set httpPost Entity
+            httpPost.setEntity(se);
+
+            // 7. Set some headers to inform server about the type of the content
+            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-type", "application/json");
+
+            // 8. Execute POST request to the given URL
+            HttpResponse httpResponse = httpclient.execute(httpPost);
+
+            // 9. receive response as inputStream
+            inputStream = httpResponse.getEntity().getContent();
+
+            // 10. convert inputstream to string
+            if(inputStream != null)
+                result = convertInputStreamToString(inputStream);
+            else
+                result = "Did not work!";
+
+        } catch (Exception e) {
+            Log.d(TAG, e.getLocalizedMessage());
+        }
+        Log.i(TAG, "RESULT: " + result);
+        // 11. return result
+        return result;
+    }
+
+    private static String convertInputStreamToString(InputStream inputStream) throws IOException{
+        BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
+        String line = "";
+        String result = "";
+        while((line = bufferedReader.readLine()) != null)
+            result += line;
+
+        inputStream.close();
+        return result;
+
+    }
+
+    private class HttpAsyncTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... urls) {
+            LocationList.getInstance().getList();
+            return POST(urls[0], createJSON());
+        }
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(String result) {
+            Log.i(TAG, "RESULT: " + result);
+            Toast.makeText(getBaseContext(), "Data Sent! " + result, Toast.LENGTH_LONG).show();
+            CURRENT_TRIP_ID = -1;
+            LocationList.getInstance().clear();
+        }
+    }
 }

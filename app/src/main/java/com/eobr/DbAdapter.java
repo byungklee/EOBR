@@ -23,8 +23,8 @@ public class DbAdapter extends SQLiteOpenHelper {
             "trip_type text not null,\n" +
             "type text not null, \n" +
             "latitude real not null,\n" +
-            " longitude real not null,\n" +
-            "  time text not null, \n" +
+            "longitude real not null,\n" +
+            "time text not null, \n" +
             "note text);";
 
     public DbAdapter(Context ctx) {
