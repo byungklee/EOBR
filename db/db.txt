@@ -12,6 +12,9 @@ latitude real not null,
  insert into trips (truck_id, trip_type, type, latitude, longitude, time)
  values(1, "pick up", "start", 10, 138, "12/24/2014 3:50:40");
 
+  insert into trips (truck_id, trip_type, type, latitude, longitude, time)
+ values(1, "pick up", "running", 10, 138, "12/24/2014 3:50:41");
+
  insert into trips (truck_id, trip_type, type, latitude, longitude, time)
  values(1, pick up, start, 10, 138, 12/24/2014 3:50:40);
 

@@ -186,6 +186,8 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
                     Intent i = new Intent(getApplicationContext(), GPSIntentService.class);
                     i.putExtra("type", "stop");
                     startService(i);
+                    LoginFragment.setStartButton(true);
+
                 } else {
                     Toast.makeText(getApplicationContext(), "There is no running trip.", Toast.LENGTH_SHORT).show();
                 }
@@ -265,7 +267,6 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
             DbAdapter db = new DbAdapter(getApplicationContext());
             SQLiteDatabase sqlDb = db.getReadableDatabase();
             Cursor cursor = sqlDb.rawQuery("select * from trips where trip_id=" + CURRENT_TRIP_ID + " order by id", null);
-
 
             Log.i(TAG, "cusor count " + cursor.getCount());
             if( cursor.getCount() < 1)
@@ -385,8 +386,10 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
             // 5. set json to StringEntity
             StringEntity se = new StringEntity(json);
 
+
             // 6. set httpPost Entity
             httpPost.setEntity(se);
+
 
             // 7. Set some headers to inform server about the type of the content
             httpPost.setHeader("Accept", "application/json");

@@ -18,7 +18,7 @@ public class LoginFragment extends Fragment {
 
 	//private Button startButton;
 	private Button stopButton;
-    private TextView mStartButtonText;
+    private static TextView mStartButtonText;
 	
 	public LoginFragment() {
 		
@@ -87,6 +87,13 @@ public class LoginFragment extends Fragment {
 		return rootView;
 	}
 
+    public static void setStartButton(boolean flag) {
+        if(flag) {
+            mStartButtonText.setText("START TRIP");
+        } else {
+            mStartButtonText.setText("RESUME");
+        }
+    }
 }
 
 

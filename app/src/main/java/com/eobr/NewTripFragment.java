@@ -124,8 +124,6 @@ public class NewTripFragment extends Fragment implements GPSListener {
                 frt.commit();
                 MainActivity.isRunning = true;
 
-
-
                 int checkedRadioButtonId = mTripTypeRadio.getCheckedRadioButtonId();
 
                 switch (checkedRadioButtonId) {
@@ -219,5 +217,7 @@ public class NewTripFragment extends Fragment implements GPSListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
     }
+
+
 
 }
