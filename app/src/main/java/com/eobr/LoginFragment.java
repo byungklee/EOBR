@@ -14,9 +14,14 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * LoginFragment shows two main buttons: Start and Stop. This interface is to start a new trip or to stop a trip.
+ */
 public class LoginFragment extends Fragment {
 
-	//private Button startButton;
+    /**
+     * Fields
+     */
 	private Button stopButton;
     private static TextView mStartButtonText;
 	
@@ -29,8 +34,6 @@ public class LoginFragment extends Fragment {
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.fragment_login, container,
 				false);
-		
-		//startButton = (Button) rootView.findViewById(R.id.start_button);
 
 		stopButton = (Button) rootView.findViewById(R.id.stop_button);
 
@@ -38,14 +41,12 @@ public class LoginFragment extends Fragment {
         if(MainActivity.isRunning) {
             mStartButtonText.setText("To Status");
         }
-		
+
+        //Implementation of start button: it opens a new trip view
 		mStartButtonText.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				//Intent i = new Intent(getActivity().getApplicationContext(), NewTripActivity.class);
-				//getActivity().startActivity(i);
                 if(!MainActivity.isRunning) {
                     FragmentManager fragmentManager2 = getFragmentManager();
                     FragmentTransaction fragmentTransaction2 = fragmentManager2.beginTransaction();
@@ -67,7 +68,8 @@ public class LoginFragment extends Fragment {
 
             }
 		});
-		
+
+        //Implementation of stop button: it stops the currently running trip.
 		stopButton.setOnClickListener(new OnClickListener() {
 			
 			@Override

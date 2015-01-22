@@ -8,9 +8,12 @@ import android.util.Log;
 
 /**
  * Created by byung on 12/8/14.
+ * Database Adapter that handles initialization of the sqlite table.
  */
 public class DbAdapter extends SQLiteOpenHelper {
-
+    /**
+     * Constant Data and variable declaration
+     */
     private static final String DATABASE_NAME = "eobrdb";
     private static final String TABLE_NAME = "trips";
     private static final int DATABASE_VERSION = 3;
@@ -27,6 +30,9 @@ public class DbAdapter extends SQLiteOpenHelper {
             "time text not null, \n" +
             "note text);";
 
+    /**
+     *  Constructor
+     */
     public DbAdapter(Context ctx) {
         super(ctx, DATABASE_NAME, null, DATABASE_VERSION);
         mContext = ctx;
@@ -34,9 +40,6 @@ public class DbAdapter extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-//        Cursor cur = db.rawQuery("select * from trips",null);
-
-  //      Log.d("DBAdpater", "Debugging trips " + cur.getCount());
         db.execSQL(CREATE_TABLE);
     }
 

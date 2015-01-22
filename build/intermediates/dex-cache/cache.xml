@@ -29,5 +29,19 @@
         sha1="d1bf02de1c56d942e7a9d093b8610ba1ef4128e3">
         <dex dex="/Users/byung/AndroidstudioProjects/EOBR/app/build/intermediates/pre-dexed/debug/classes-56c954cee70ae0a7817d2598966a81256cdf1645.jar" />
     </item>
+    <item
+        jar="/Users/byung/AndroidstudioProjects/EOBR/httpmime-4.3/httpmime-4.3.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="5b0002c5fb66867ca919be0fbd86de1cfaf76da7">
+        <dex dex="/Users/byung/AndroidstudioProjects/EOBR/app/build/intermediates/pre-dexed/debug/httpmime-4.3-0ac3c763304a4c3e2c094fac85494ed13d8a66e4.jar" />
+    </item>
+    <item
+        jar="/Users/byung/AndroidstudioProjects/EOBR/httpcore-4.3.3/httpcore-4.3.3.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="f91b7a4aadc5cf486df6e4634748d7dd7a73f06d">
+        <dex dex="/Users/byung/AndroidstudioProjects/EOBR/app/build/intermediates/pre-dexed/debug/httpcore-4.3.3-352cd249f58d4354ef933a7d8d11ef56440d34b6.jar" />
+    </item>
 
 </items>

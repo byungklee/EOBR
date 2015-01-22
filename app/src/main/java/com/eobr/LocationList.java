@@ -15,7 +15,6 @@ public class LocationList {
     private LocationList() {
         mLocationList = new ArrayList<MyLocation>();
     }
-
     public static LocationList getInstance() {
         if(instance == null) {
             instance = new LocationList();

@@ -4,14 +4,25 @@ import android.text.format.Time;
 
 /**
  * Created by byung on 12/5/14.
+ *
+ * MyLocation Object to save the data
  */
 public class MyLocation {
+    /**
+     * Fields
+     */
     private String type;
     private String note;
     private double latitude;
     private double longitude;
     private Time time;
 
+    /**
+     * Constructor
+     * @param type
+     * @param latitude
+     * @param longitude
+     */
     public MyLocation(String type, double latitude, double longitude) {
         this.setType(type);
         this.setLatitude(latitude);
@@ -21,6 +32,9 @@ public class MyLocation {
         note = "";
     }
 
+    /**
+     * Setters and getters
+     */
     public double getLatitude() {
         return latitude;
     }
@@ -41,8 +55,6 @@ public class MyLocation {
         time.setToNow();
     }
 
-
-
     public Time getTime() {
         return time;
     }
@@ -50,7 +62,6 @@ public class MyLocation {
     public String getTimeString() {
         StringBuilder sb = new StringBuilder();
         sb.append(time.month).append("/").append(time.monthDay).append("/").append(time.year).append(" ").append(time.format("%k:%M:%S"));
-
         return sb.toString();
     }
 

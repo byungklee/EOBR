@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.util.Iterator;
 import java.util.List;
 
 import android.content.Context;
@@ -32,17 +33,26 @@ import android.view.MenuItem;
 import android.view.ViewConfiguration;
 import android.widget.Toast;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+
+import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Top level in hierarchy which handles required data and all the views are handled by this activity.
+ */
 public class MainActivity extends ActionBarActivity implements GPSListener {
 
-    //public static List<MyLocation> myLocationList = new LinkedList<MyLocation>();
     public static boolean isRunning = false;
     public static String tripType = "";
     public static String TRUCK_ID = "1";
@@ -80,7 +90,8 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
         super.onResume();
         Log.i("MainActivity", "Resuming");
     }
-	
+
+    //Using this method because Samsung does not allow menu on the action bar for testing.
 	private void getOverflowMenu() {
 		try {
 			ViewConfiguration config = ViewConfiguration.get(this);
@@ -134,6 +145,11 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
 		return super.onCreateOptionsMenu(menu);
 	}
 
+    /**
+     * Implmentation of menu
+     * @param item
+     * @return
+     */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle action bar item clicks here. The action bar will
@@ -203,7 +219,7 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
 
     @Override
     public void execute(MyLocation location) {
-
+        //Do nothing
     }
 
     public void viewTrip() {
@@ -224,6 +240,13 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
         }
     }
 
+    /**
+     * Listener to catch the stop call.
+     * @param type
+     * @param latitude
+     * @param longitude
+     * @param note
+     */
     @Override
     public void executeForSingle(String type, double latitude, double longitude, String note) {
         if(type == null) {
@@ -235,7 +258,6 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
                     latitude,
                     longitude);
             location.setNote(note);
-            //MainActivity.myLocationList.add(location);
             LocationList locationList = LocationList.getInstance();
             locationList.add(location);
             DbAdapter db = new DbAdapter(getApplicationContext());
@@ -248,19 +270,18 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
             Log.i(TAG, type + " " + latitude + " " + longitude);
             sqlDb.close();
             db.close();
-
             stopService(MainActivity.GPSIntent);
-        //    createKMLFile(locationList.getList());
-           new HttpAsyncTask().execute(serverIp + "/add");
-
-
+            //createKMLFile(locationList.getList()); //Currently, the server is generating.
+            new HttpAsyncTask().execute(serverIp + "/add");
+            new HttpPostMultiEntityAsyncTask().execute("");
             Log.i(TAG,createJSON().toString());
-
-            //locationList.clear();
         }
     }
-    //Structure =
-    //trip_id/trip_id/truck_id/trip_type/type/latitude/longitude/time/description
+
+    /**
+     * Create JSON from the database
+     * @return
+     */
     public JSONObject createJSON() {
         JSONObject jsonObject = new JSONObject();
 
@@ -273,7 +294,7 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
                 return null;
             cursor.moveToFirst();
 
-
+// Information about table
 //        0 id getint
 //        1 trip_id getint
 //        2 truck_id getString
@@ -305,9 +326,12 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
         return jsonObject;
     }
 
+    /**
+     * Creates KML File on a device or an external drive. Currently, not using because the server is
+     * generating.
+     * @param locationList
+     */
     public void createKMLFile(List<MyLocation> locationList) {
-        //FileOutputStream outputStream;
-
         StringBuilder sb = new StringBuilder();
         sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n" +
@@ -354,6 +378,7 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
         }
     }
 
+    //Method to check there is an external storage.
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED.equals(state)) {
@@ -362,6 +387,7 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
         return false;
     }
 
+    //Post Json
     public static String POST(String url, JSONObject jsonObj){
         InputStream inputStream = null;
         String result = "";
@@ -386,10 +412,8 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
             // 5. set json to StringEntity
             StringEntity se = new StringEntity(json);
 
-
             // 6. set httpPost Entity
             httpPost.setEntity(se);
-
 
             // 7. Set some headers to inform server about the type of the content
             httpPost.setHeader("Accept", "application/json");
@@ -424,9 +448,9 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
 
         inputStream.close();
         return result;
-
     }
 
+    //to post json.
     private class HttpAsyncTask extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... urls) {
@@ -442,4 +466,60 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
             LocationList.getInstance().clear();
         }
     }
+
+    //POST files
+    private class HttpPostMultiEntityAsyncTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            try
+            {
+                HttpClient client = new DefaultHttpClient();
+                HttpPost post = new HttpPost(serverIp+"/uploadfile");
+                post.setHeader("enctype", "multipart/form-data");
+                MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
+                entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+
+                //To add fields. In the server side, it reads the fields.
+//                entityBuilder.addTextBody(USER_ID, userId);
+//                entityBuilder.addTextBody(NAME, name);
+
+                //To add files. In the server side, it reads the files.
+                Iterator it = NoteList.getInstance().iterator();
+                String note = "note";
+                int i=1;
+                while(it.hasNext()) {
+                    FileBody filebody = new FileBody(new File((String) it.next()));
+                    entityBuilder.addPart(note+i, filebody);
+                    i++;
+                }
+
+                HttpEntity entity = entityBuilder.build();
+
+                post.setEntity(entity);
+
+                HttpResponse response = client.execute(post);
+
+                HttpEntity httpEntity = response.getEntity();
+
+                String result = EntityUtils.toString(httpEntity);
+
+                Log.v("result", result);
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            NoteList.getInstance().clear();
+        }
+    }
+
+
+
 }

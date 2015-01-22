@@ -15,12 +15,16 @@ import android.widget.Toast;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * GPSService to service the location update constantly while running
+ */
 public class GPSService extends Service implements LocationListener {
 
+    /**
+     * Constant and variables
+     */
     private static final String TAG = "GPSService";
     private LocationManager locationManager;
-    //Since we are going to keep adding location to the list
-    //Choosing linkedlist over arraylist.
     private final String type = "Running";
     private boolean isFirst;
 
@@ -31,7 +35,6 @@ public class GPSService extends Service implements LocationListener {
     public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        //requestionLocationUpdates(Provider, Min_Time in millisecond, Min_Distance in meter, listener)
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 1, this);
         Log.i(TAG, "Gps Service Enabled");
         Toast.makeText(getApplicationContext(), "GPS Service Enabled", Toast.LENGTH_SHORT).show();
@@ -45,7 +48,6 @@ public class GPSService extends Service implements LocationListener {
         super.onDestroy();
     }
 
-
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
@@ -56,7 +58,7 @@ public class GPSService extends Service implements LocationListener {
     public void onLocationChanged(Location location) {
         Log.i(TAG, "Location has been changed! " + location.getLatitude() + " " + location.getLongitude());
         Intent localIntent= new Intent(Constants.BROAD_CAST_LOCATION);
-
+        //Put the type as first when it's first time.
         localIntent.putExtra("type", isFirst ? "start" : type);
         localIntent.putExtra("latitude", location.getLatitude());
         localIntent.putExtra("longitude", location.getLongitude());
@@ -78,6 +80,5 @@ public class GPSService extends Service implements LocationListener {
     public void onProviderDisabled(String provider) {
         Log.i(TAG, "Gps Service Disabled");
     }
-
 
 }

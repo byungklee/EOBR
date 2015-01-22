@@ -28,38 +28,25 @@ import java.util.Locale;
 
 public class NewTripFragment extends Fragment implements GPSListener {
 
+    /**
+     * Variables
+     */
     private Button mStartButton;
     private TextView mOriginTextView;
     private GPSReceiver mGpsReceiver;
     private RadioButton mPickUpEmpty;
     private RadioGroup mTripTypeRadio;
     private Context mContext;
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-  //  private OnFragmentInteractionListener mListener;
+    private MyLocation ml;
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * Factory method for this class.
      * @return A new instance of fragment NewTripFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static NewTripFragment newInstance(String param1, String param2) {
+    public static NewTripFragment newInstance() {
         NewTripFragment fragment = new NewTripFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -71,10 +58,6 @@ public class NewTripFragment extends Fragment implements GPSListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -82,31 +65,33 @@ public class NewTripFragment extends Fragment implements GPSListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_new_trip, container, false);
+        Log.i("NEWTRIP", "INIT");
+
         mContext = getActivity().getApplicationContext();
-        mOriginTextView = (TextView) v.findViewById(R.id.origin_text);
         mGpsReceiver = new GPSReceiver(this);
+        /**
+         * Load views from the view
+         */
+        mOriginTextView = (TextView) v.findViewById(R.id.origin_text);
         mPickUpEmpty = (RadioButton) v.findViewById(R.id.pickup_empty);
         //PickupEmpty is set as default
         mPickUpEmpty.setChecked(true);
-
         mTripTypeRadio = (RadioGroup) v.findViewById(R.id.trip_type_radio);
 
 
-        Log.i("NEWTRIP", "INIT");
-
+        /**
+         * Call GPSIntentSerivce to get the current location
+         */
         Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
         getActivity().startService(i);
-
         IntentFilter mStatusIntentFilter = new IntentFilter(
                 Constants.BROAD_CAST_LOCATION_ONCE);
-
-
+        /**
+         * register receiver from broadcast
+         */
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(
                 mGpsReceiver,
                 mStatusIntentFilter);
-
-        //GPSIntentService.startAction(getActivity().getApplicationContext());
-
 
         mStartButton = (Button) v.findViewById(R.id.start_button);
         		mStartButton.setOnClickListener(new View.OnClickListener() {
@@ -123,7 +108,7 @@ public class NewTripFragment extends Fragment implements GPSListener {
                 frt.replace(R.id.container, sfm);
                 frt.commit();
                 MainActivity.isRunning = true;
-
+                NoteFragment.noteNumber = 1;
                 int checkedRadioButtonId = mTripTypeRadio.getCheckedRadioButtonId();
 
                 switch (checkedRadioButtonId) {
@@ -140,8 +125,7 @@ public class NewTripFragment extends Fragment implements GPSListener {
                         MainActivity.tripType = "deliver_full";
                         break;
                     default:
-                }
-
+               }
             }
 		});
 
@@ -152,7 +136,15 @@ public class NewTripFragment extends Fragment implements GPSListener {
     public void execute(MyLocation location) {
 
     }
-    private MyLocation ml;
+
+
+    /**
+     * Given latitude and longitude, it's getting the address of the location using Geocoder.
+     * @param str
+     * @param latitude
+     * @param longitude
+     * @param note
+     */
     @Override
     public void executeForSingle(String str, double latitude, double longitude, String note) {
         ml = new MyLocation(str, latitude, longitude);
@@ -173,35 +165,7 @@ public class NewTripFragment extends Fragment implements GPSListener {
         catch (Exception e) {
             e.printStackTrace();
         }
-
-        //mOriginTextView.setText(latitude + " " + longitude);
-
     }
-
-
-    // TODO: Rename method, update argument and hook method into UI event
-//    public void onButtonPressed(Uri uri) {
-//        if (mListener != null) {
-//            mListener.onFragmentInteraction(uri);
-//        }
-//    }
-//
-//    @Override
-//    public void onAttach(Activity activity) {
-//        super.onAttach(activity);
-//        try {
-//            mListener = (OnFragmentInteractionListener) activity;
-//        } catch (ClassCastException e) {
-//            throw new ClassCastException(activity.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-//    }
-//
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        mListener = null;
-//    }
 
     /**
      * This interface must be implemented by activities that contain this
@@ -217,7 +181,4 @@ public class NewTripFragment extends Fragment implements GPSListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
     }
-
-
-
 }
