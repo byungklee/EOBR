@@ -1,6 +1,5 @@
 package com.eobr;
 
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -22,7 +21,7 @@ public class LoginFragment extends Fragment {
     /**
      * Fields
      */
-	private Button stopButton;
+	private TextView mStopButtonText;
     private static TextView mStartButtonText;
 	
 	public LoginFragment() {
@@ -35,7 +34,7 @@ public class LoginFragment extends Fragment {
 		View rootView = inflater.inflate(R.layout.fragment_login, container,
 				false);
 
-		stopButton = (Button) rootView.findViewById(R.id.stop_button);
+		mStopButtonText = (TextView) rootView.findViewById(R.id.stop_button_text);
 
         mStartButtonText = (TextView) rootView.findViewById(R.id.start_button_text);
         if(MainActivity.isRunning) {
@@ -70,7 +69,7 @@ public class LoginFragment extends Fragment {
 		});
 
         //Implementation of stop button: it stops the currently running trip.
-		stopButton.setOnClickListener(new OnClickListener() {
+		mStopButtonText.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {

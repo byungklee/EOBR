@@ -1,8 +1,13 @@
 package com.eobr;
 
+import android.content.IntentFilter;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,12 +18,14 @@ import android.widget.TextView;
  * Use the {@link DetailStatusFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class DetailStatusFragment extends Fragment {
+public class DetailStatusFragment extends Fragment implements GPSListener {
 
+    private static final String TAG = "DetailStatus";
     /**
      * Variable declaration
      */
     private TextView textview;
+    private GPSReceiver gpsReceiver;
 
     /**
      * Factory method to create a new instance of
@@ -59,8 +66,42 @@ public class DetailStatusFragment extends Fragment {
             sb.append(ml.getType() + " ").append(ml.getLatitude()).append(" ").append(ml.getLongitude()).append(" ").append(ml.getTimeString()).append("\n");
         }
         textview.setText(sb.toString());
+
+        gpsReceiver = new GPSReceiver(this);
+        IntentFilter mStatusIntentFilter = new IntentFilter(
+                Constants.BROAD_CAST_LOCATION);
+
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(
+                gpsReceiver,
+                mStatusIntentFilter);
+
         return v;
     }
 
+    //Listens to GPS Receiver for GPSService.
+    public void execute(MyLocation location) {
+        Log.i(TAG, location.getType() + " " + location.getLatitude() + " " + location.getLongitude());
+        MyLocation ml = LocationList.getInstance().getList().get(LocationList.getInstance().size()-1);
+        StringBuilder sb = new StringBuilder().append(ml.getType() + " ").append(ml.getLatitude()).append(" ").append(ml.getLongitude()).append(" ").append(ml.getTimeString()).append("\n");
+        textview.setText(textview.getText() + sb.toString());
+        DbAdapter db = new DbAdapter(getActivity().getApplicationContext());
+        SQLiteDatabase sqlDb = db.getWritableDatabase();
+        sqlDb.execSQL("insert into trips (trip_id, truck_id, trip_type, type, latitude, longitude, time) " +
+                "values (" + MainActivity.CURRENT_TRIP_ID + ", \"" +MainActivity.TRUCK_ID + "\", \"" + MainActivity.tripType + "\", \"" + location.getType() + "\", " +
+                location.getLatitude() + ", " + location.getLongitude() + ", \"" + location.getTimeString() + "\")");
+        sqlDb.close();
+        db.close();
+    }
 
+    //This doesn't happen in detail status.
+    @Override
+    public void executeForSingle(String type, double latitude, double longitude, String note) {
+
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(gpsReceiver);
+    }
 }

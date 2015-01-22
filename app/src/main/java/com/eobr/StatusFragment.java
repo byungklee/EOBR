@@ -203,14 +203,14 @@ public class StatusFragment extends Fragment implements GPSListener {
     public String getListString() {
         StringBuilder sb = new StringBuilder();
         int size = locationList.size();
-        if(size > 3) {
-            for(int i=size - 3;i<size;i++) {
+        if(size > 8) {
+            for(int i=size - 8;i<size;i++) {
                 MyLocation ml = locationList.get(i);
-                sb.append(ml.getType() + " ").append(ml.getLatitude()).append(" ").append(ml.getLongitude()).append(" ").append(ml.getTimeString()).append("\n");
+                sb.append(ml.getType() + "  ").append(ml.getLatitude()).append("  ").append(ml.getLongitude()).append("  ").append(ml.getTimeString()).append("\n");
             }
         } else {
             for(MyLocation ml :locationList.getList()) {
-            sb.append(ml.getType() + " ").append(ml.getLatitude()).append(" ").append(ml.getLongitude()).append(" ").append(ml.getTimeString()).append("\n");
+            sb.append(ml.getType() + "  ").append(ml.getLatitude()).append("  ").append(ml.getLongitude()).append("  ").append(ml.getTimeString()).append("\n");
          }
         }
         return sb.toString();

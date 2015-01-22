@@ -35,7 +35,7 @@ public class GPSService extends Service implements LocationListener {
     public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 1, this);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, this);
         Log.i(TAG, "Gps Service Enabled");
         Toast.makeText(getApplicationContext(), "GPS Service Enabled", Toast.LENGTH_SHORT).show();
         isFirst = true;
