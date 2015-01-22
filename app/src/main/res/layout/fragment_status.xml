@@ -6,7 +6,7 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.2"
+        android:layout_weight="0.3"
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
         android:orientation="vertical">
@@ -16,10 +16,8 @@
             android:layout_weight="0.2"
             android:text="@string/status"
             android:id="@+id/status_text_view"
-            android:textSize="18sp"
-            android:layout_marginLeft="24dp">
-
-        </TextView>
+            android:textSize="36sp"
+            />
         <TextView
             android:id="@+id/scroll_view"
             android:layout_width="match_parent"
@@ -54,24 +52,25 @@
                 android:id="@+id/origin_text_view"
                 android:text="@string/origin"
                 android:gravity="center"
+                android:textSize="36sp"
                 />
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textSize="24sp"
                 android:text="@string/od_1"
                 android:id="@+id/origin_waiting_at_the_gate"/>
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textSize="24sp"
                 android:text="@string/od_2"
                 android:id="@+id/origin_terminal_gate_closed"
                 />
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textSize="24sp"
                 android:text="@string/od_3"
                 android:id="@+id/origin_filling_out_paperwork"
                 />
@@ -92,24 +91,24 @@
                 android:id="@+id/destin_text_view"
                 android:text="@string/destination"
                 android:gravity="center"
-
+                android:textSize="36sp"
                 />
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textSize="24sp"
                 android:text="@string/od_1"
                 android:id="@+id/destin_waiting_at_the_gate"/>
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textSize="24sp"
                 android:text="@string/od_2"
                 android:id="@+id/destin_terminal_gate_closed"/>
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textSize="24sp"
                 android:text="@string/od_3"
                 android:id="@+id/destin_filling_out_paperwork"/>
         </LinearLayout>
@@ -128,56 +127,36 @@
                 android:id="@+id/road_text_view"
                 android:text="@string/road"
                 android:gravity="center"
+                android:textSize="36sp"
                 />
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textSize="24sp"
                 android:text="@string/road_1"
                 android:id="@+id/road_traffic"/>
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textSize="24sp"
                 android:text="@string/road_2"
                 android:id="@+id/road_refueling"/>
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textSize="24sp"
                 android:text="@string/road_3"
                 android:id="@+id/road_equipment_problem"/>
         </LinearLayout>
-
     </LinearLayout>
-
-    
     
     <Button 
         android:layout_width="144dp"
         android:layout_height="wrap_content"
         android:text="@string/note"
-        android:textSize="12sp"
+        android:textSize="24sp"
         android:id="@+id/note"
          android:layout_below="@+id/origin_layer"
          android:layout_alignLeft="@+id/origin_layer"/>
-    	
-        <!-- android:layout_toRightOf="@+id/home"  -->
-       
-        <!-- 
-    <Button 
-        android:layout_width="144dp"
-        android:layout_height="wrap_content"
-        android:text="@string/home"
-        android:id="@+id/home"
-        android:textSize="12sp"
-        android:layout_below="@+id/origin_layer"/>
-    <Button 
-        android:layout_width="144dp"
-        android:layout_height="wrap_content"
-        android:text="@string/action_stop_trip"
-        android:textSize="12sp"
-        android:layout_toRightOf="@+id/note"
-        android:layout_below="@+id/origin_layer"/> -->
     
 </LinearLayout>

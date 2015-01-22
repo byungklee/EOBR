@@ -9,64 +9,40 @@
     android:orientation="vertical"
     >
 
-    <TextView
-        android:id="@+id/title_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="0.2"
-        android:layout_gravity="center"
-        android:text="E O B R"
-        android:textStyle="bold"
-        android:textSize="48sp"
-        />
-
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_weight="0.8"
-
         android:layout_gravity="center"
         android:orientation="horizontal"
         android:paddingLeft="16dp"
         android:paddingRight="16dp" 
-        android:paddingTop="48dp"
+        android:paddingTop="144dp"
         >
-
-
-            <TextView
-                android:id="@+id/start_button_text"
-                android:layout_width="144dp"
-                android:layout_height="wrap_content" 
-                android:text="START TRIP"
-                android:gravity="center" 
-                android:textSize="24sp"
-                android:drawableTop="@drawable/app_icon_start"
-                />
-
-
-        <LinearLayout
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/start_button_text"
+            android:layout_width="280dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="48dp"
-            
-            android:orientation="vertical" >
+            android:text="START TRIP"
+            android:layout_marginRight="100dp"
 
-            <Button
-                android:id="@+id/stop_button"
-                android:layout_width="144dp"
-                android:layout_height="144dp"
-                
-                android:background="@drawable/app_icon_stop"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp" />
-            <TextView
-                android:id="@+id/stop_button_text"
-                android:layout_width="144dp"
-                android:layout_height="wrap_content"
-                android:text="STOP TRIP"
-                android:gravity="center"
-                android:textSize="24sp" />
-        </LinearLayout>
+            android:gravity="center"
+            android:textSize="48sp"
+            android:drawableTop="@drawable/app_icon_start"
+            />
+
+        <TextView
+            android:id="@+id/stop_button_text"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:text="START TRIP"
+
+            android:layout_marginLeft="100dp"
+            android:gravity="center"
+            android:textSize="48sp"
+            android:drawableTop="@drawable/app_icon_stop"
+            />
+
     </LinearLayout>
 
 </LinearLayout>
