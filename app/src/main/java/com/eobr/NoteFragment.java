@@ -84,7 +84,7 @@ public class NoteFragment extends Fragment {
         mCancelButton.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
-                 Toast.makeText(getActivity().getApplicationContext(), "" + getFragmentManager().getBackStackEntryCount(), Toast.LENGTH_SHORT).show();
+                 Toast.makeText(getActivity().getApplicationContext(), "Canceled", Toast.LENGTH_SHORT).show();
                  stopRecording();
                  getFragmentManager().popBackStack();
              }
@@ -102,6 +102,7 @@ public class NoteFragment extends Fragment {
                 NoteList.getInstance().add(mFileName);
                 noteNumber++;
                 Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
+                Toast.makeText(getActivity().getApplicationContext(), "Saved", Toast.LENGTH_SHORT).show();
                 i.putExtra("type", "note");
                 i.putExtra("note", mFileName);
                 getActivity().startService(i);

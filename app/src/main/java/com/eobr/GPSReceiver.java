@@ -3,18 +3,20 @@ package com.eobr;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
 import android.util.Log;
 
-import java.util.LinkedList;
-import java.util.List;
-
+/**
+ * GPSReceiver is a listener. for GPS work and signals to whoever is listening.
+ */
 public class GPSReceiver extends BroadcastReceiver {
-    public GPSReceiver() {
-    }
 
-    List<MyLocation> locationList = new LinkedList<MyLocation>();
-    GPSListener gpsListener;
+    private GPSListener gpsListener;
+
+    public GPSReceiver(){}
+    /**
+     * Constructor
+     * @param gpsListener
+     */
     public GPSReceiver(GPSListener gpsListener) {
         this.gpsListener = gpsListener;
     }
@@ -26,34 +28,23 @@ public class GPSReceiver extends BroadcastReceiver {
         Log.i("GPSReceiver", "GPS info has been received " + intent.getAction() + " " + intent.getType() );
         if(intent.getAction().equals(Constants.BROAD_CAST_LOCATION)) {
             Log.i("GPSReceiver", "constant" );
-            MyLocation location = new MyLocation(intent.getStringExtra("type"),
-                    intent.getDoubleExtra("latitude", 0),
-                    intent.getDoubleExtra("longitude", 0));
-            LocationList ll = LocationList.getInstance();
-            ll.add(location);
-            gpsListener.execute(location);
+//            MyLocation location = new MyLocation(intent.getStringExtra("type"),
+//                    intent.getDoubleExtra("latitude", 0),
+//                    intent.getDoubleExtra("longitude", 0));
+//            LocationList ll = LocationList.getInstance();
+//            ll.add(location);
+            gpsListener.execute();
         } else if(intent.getAction().equals(Constants.BROAD_CAST_LOCATION_ONCE)) {
             MyLocation location = new MyLocation(intent.getStringExtra("type"),
                     intent.getDoubleExtra("latitude", 0),
                     intent.getDoubleExtra("longitude", 0));
-            String noteTemp = intent.getStringExtra("note");
-            if(noteTemp != null) {
-                gpsListener.executeForSingle(location.getType(), location.getLatitude(), location.getLongitude(), noteTemp);
-            } else {
-                gpsListener.executeForSingle(location.getType(), location.getLatitude(), location.getLongitude(), null);
-            }
+//            String noteTemp = intent.getStringExtra("note");
+            gpsListener.executeForSingle(location);
+//            if(noteTemp != null) {
+//                gpsListener.executeForSingle(location.getType(), location.getLatitude(), location.getLongitude(), noteTemp);
+//            } else {
+//                gpsListener.executeForSingle(location.getType(), location.getLatitude(), location.getLongitude(), null);
+//            }
         }
-    }
-
-    public List getLocationList() {
-        return locationList;
-    }
-
-    public String getListString() {
-        StringBuilder sb = new StringBuilder();
-        for(MyLocation ml : locationList) {
-            sb.append(ml.getLatitude()).append(" ").append(ml.getLongitude()).append(" ").append(ml.getTimeString()).append("\n");
-        }
-        return sb.toString();
     }
 }

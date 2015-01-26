@@ -67,7 +67,23 @@ public class StatusFragment extends Fragment implements GPSListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        locationList = LocationList.getInstance();
+    }
 
+    @Override
+    public void onResume() {
+        Log.e("DEBUG", "onResume of LoginFragment");
+        super.onResume();
+        IntentFilter mStatusIntentFilter = new IntentFilter(
+                Constants.BROAD_CAST_LOCATION);
+        IntentFilter mLocationOnceFilter = new IntentFilter(Constants.BROAD_CAST_LOCATION_ONCE);
+
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(
+                gpsReceiver,
+                mStatusIntentFilter);
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(
+                gpsReceiver,
+                mLocationOnceFilter);
     }
 
     @Override
@@ -82,7 +98,6 @@ public class StatusFragment extends Fragment implements GPSListener {
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
                 ft.replace(R.id.container, new NoteFragment());
                 ft.addToBackStack("status");
-
                 ft.commit();
             }
         });
@@ -193,7 +208,6 @@ public class StatusFragment extends Fragment implements GPSListener {
                 gpsReceiver,
                 mLocationOnceFilter);
 
-        locationList = LocationList.getInstance();
 
         if(!locationList.isEmpty())
             mDetailStatusTextView.setText(getListString());
@@ -203,8 +217,8 @@ public class StatusFragment extends Fragment implements GPSListener {
     public String getListString() {
         StringBuilder sb = new StringBuilder();
         int size = locationList.size();
-        if(size > 8) {
-            for(int i=size - 8;i<size;i++) {
+        if(size > 10) {
+            for(int i=size - 10;i<size;i++) {
                 MyLocation ml = locationList.get(i);
                 sb.append(ml.getType() + "  ").append(ml.getLatitude()).append("  ").append(ml.getLongitude()).append("  ").append(ml.getTimeString()).append("\n");
             }
@@ -217,51 +231,12 @@ public class StatusFragment extends Fragment implements GPSListener {
     }
 
     @Override
-    public void execute(MyLocation location) {
-        Log.i(TAG, location.getType() + " " + location.getLatitude() + " " + location.getLongitude());
+    public void execute() {
         mDetailStatusTextView.setText(getListString());
-        DbAdapter db = new DbAdapter(getActivity().getApplicationContext());
-
-
-        if(MainActivity.CURRENT_TRIP_ID == -1) {
-            SQLiteDatabase sqlDb = db.getReadableDatabase();
-            String query="select trip_id from trips order by trip_id desc";
-            Cursor curs=sqlDb.rawQuery(query, null);
-            curs.moveToFirst();
-            if(curs.getCount() != 0) {
-                MainActivity.CURRENT_TRIP_ID = curs.getInt(0)+1;
-            } else
-                MainActivity.CURRENT_TRIP_ID = 1;
-            curs.close();
-        }
-
-        SQLiteDatabase sqlDb = db.getWritableDatabase();
-        sqlDb.execSQL("insert into trips (trip_id, truck_id, trip_type, type, latitude, longitude, time) " +
-                "values (" + MainActivity.CURRENT_TRIP_ID + ", \"" +MainActivity.TRUCK_ID + "\", \"" + MainActivity.tripType + "\", \"" + location.getType() + "\", " +
-                location.getLatitude() + ", " + location.getLongitude() + ", \"" + location.getTimeString() + "\")");
-        sqlDb.close();
-        db.close();
     }
 
     @Override
-    public void executeForSingle(String str, double latitude, double longitude, String note) {
-        MyLocation location = new MyLocation(str,
-                latitude,
-                longitude);
-        if(note != null) {
-            location.setNote(note);
-        }
-        locationList.add(location);
-        DbAdapter db = new DbAdapter(getActivity().getApplicationContext());
-        SQLiteDatabase sqlDb = db.getWritableDatabase();
-        Log.i(TAG, "Checking time string " + location.getTimeString());
-        sqlDb.execSQL("insert into trips (trip_id, truck_id, trip_type, type, latitude, longitude, time, note) " +
-                "values (" + MainActivity.CURRENT_TRIP_ID + ", \"" +MainActivity.TRUCK_ID + "\", \"" + MainActivity.tripType + "\", \"" +
-                location.getType() + "\", " +
-                location.getLatitude() + ", " + location.getLongitude() + ", \"" + location.getTimeString() + "\", \"" + location.getNote() + "\")");
-        Log.i(TAG, str + " " + latitude + " " + longitude );
-        sqlDb.close();
-        db.close();
+    public void executeForSingle(MyLocation myLocation) {
         mDetailStatusTextView.setText(getListString());
     }
 

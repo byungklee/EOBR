@@ -23,10 +23,11 @@ public class LoginFragment extends Fragment {
      */
 	private TextView mStopButtonText;
     private static TextView mStartButtonText;
-	
-	public LoginFragment() {
-		
-	}
+
+    /**
+     * Constructor
+     */
+    public LoginFragment() {}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -42,6 +43,7 @@ public class LoginFragment extends Fragment {
         }
 
         //Implementation of start button: it opens a new trip view
+        //TO DO: Refactor
 		mStartButtonText.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -54,17 +56,16 @@ public class LoginFragment extends Fragment {
                     //What is happening with replace is that
                     //remove(fragment1).add(fragment2)
                     fragmentTransaction2.replace(R.id.container, fragment2);
-                    fragmentTransaction2.addToBackStack(null);
+                    fragmentTransaction2.addToBackStack("main");
                     fragmentTransaction2.commit();
                 } else {
                     FragmentManager fm = getFragmentManager();
                     FragmentTransaction frt = fm.beginTransaction();
                     StatusFragment sfm = new StatusFragment();
                     frt.replace(R.id.container, sfm);
-                    frt.addToBackStack(null);
+                    frt.addToBackStack("main");
                     frt.commit();
                 }
-
             }
 		});
 

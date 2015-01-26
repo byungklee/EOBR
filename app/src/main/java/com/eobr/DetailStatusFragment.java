@@ -66,7 +66,25 @@ public class DetailStatusFragment extends Fragment implements GPSListener {
             sb.append(ml.getType() + " ").append(ml.getLatitude()).append(" ").append(ml.getLongitude()).append(" ").append(ml.getTimeString()).append("\n");
         }
         textview.setText(sb.toString());
+        return v;
+    }
 
+    //Listens to GPS Receiver for GPSService.
+    public void execute() {
+        MyLocation ml = LocationList.getInstance().getList().get(LocationList.getInstance().size()-1);
+        StringBuilder sb = new StringBuilder().append(ml.getType() + " ").append(ml.getLatitude()).append(" ").append(ml.getLongitude()).append(" ").append(ml.getTimeString()).append("\n");
+        textview.append(sb.toString());
+    }
+
+    //This doesn't happen in detail status.
+    @Override
+    public void executeForSingle(MyLocation myLocation) {
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         gpsReceiver = new GPSReceiver(this);
         IntentFilter mStatusIntentFilter = new IntentFilter(
                 Constants.BROAD_CAST_LOCATION);
@@ -74,29 +92,6 @@ public class DetailStatusFragment extends Fragment implements GPSListener {
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(
                 gpsReceiver,
                 mStatusIntentFilter);
-
-        return v;
-    }
-
-    //Listens to GPS Receiver for GPSService.
-    public void execute(MyLocation location) {
-        Log.i(TAG, location.getType() + " " + location.getLatitude() + " " + location.getLongitude());
-        MyLocation ml = LocationList.getInstance().getList().get(LocationList.getInstance().size()-1);
-        StringBuilder sb = new StringBuilder().append(ml.getType() + " ").append(ml.getLatitude()).append(" ").append(ml.getLongitude()).append(" ").append(ml.getTimeString()).append("\n");
-        textview.setText(textview.getText() + sb.toString());
-        DbAdapter db = new DbAdapter(getActivity().getApplicationContext());
-        SQLiteDatabase sqlDb = db.getWritableDatabase();
-        sqlDb.execSQL("insert into trips (trip_id, truck_id, trip_type, type, latitude, longitude, time) " +
-                "values (" + MainActivity.CURRENT_TRIP_ID + ", \"" +MainActivity.TRUCK_ID + "\", \"" + MainActivity.tripType + "\", \"" + location.getType() + "\", " +
-                location.getLatitude() + ", " + location.getLongitude() + ", \"" + location.getTimeString() + "\")");
-        sqlDb.close();
-        db.close();
-    }
-
-    //This doesn't happen in detail status.
-    @Override
-    public void executeForSingle(String type, double latitude, double longitude, String note) {
-
     }
 
     @Override

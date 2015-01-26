@@ -1,14 +1,10 @@
 package com.eobr;
 
-import android.app.Activity;
-
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.Address;
 import android.location.Geocoder;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -26,6 +22,9 @@ import android.widget.TextView;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * New Trip View
+ */
 public class NewTripFragment extends Fragment implements GPSListener {
 
     /**
@@ -37,7 +36,6 @@ public class NewTripFragment extends Fragment implements GPSListener {
     private RadioButton mPickUpEmpty;
     private RadioGroup mTripTypeRadio;
     private Context mContext;
-    private MyLocation ml;
 
     /**
      * Factory method for this class.
@@ -106,9 +104,10 @@ public class NewTripFragment extends Fragment implements GPSListener {
                 FragmentTransaction frt = fm.beginTransaction();
                 StatusFragment sfm = new StatusFragment();
                 frt.replace(R.id.container, sfm);
+                frt.addToBackStack("new");
                 frt.commit();
                 MainActivity.isRunning = true;
-                NoteFragment.noteNumber = 1;
+
                 int checkedRadioButtonId = mTripTypeRadio.getCheckedRadioButtonId();
 
                 switch (checkedRadioButtonId) {
@@ -133,25 +132,18 @@ public class NewTripFragment extends Fragment implements GPSListener {
     }
 
     @Override
-    public void execute(MyLocation location) {
-
-    }
-
+    public void execute(){}
 
     /**
      * Given latitude and longitude, it's getting the address of the location using Geocoder.
-     * @param str
-     * @param latitude
-     * @param longitude
-     * @param note
+     * @param ml
      */
     @Override
-    public void executeForSingle(String str, double latitude, double longitude, String note) {
-        ml = new MyLocation(str, latitude, longitude);
+    public void executeForSingle(MyLocation ml) {
         try{
-            Log.i("NewTrip", latitude + " " + longitude);
+            Log.i("NewTrip", ml.getLatitude() + " " + ml.getLongitude());
             Geocoder geo = new Geocoder(mContext, Locale.getDefault());
-            List<Address> addresses = geo.getFromLocation(latitude, longitude, 1);
+            List<Address> addresses = geo.getFromLocation(ml.getLatitude(), ml.getLongitude(), 1);
             if (addresses.isEmpty()) {
                 mOriginTextView.setText("Waiting for Location");
             }
@@ -161,24 +153,9 @@ public class NewTripFragment extends Fragment implements GPSListener {
                         addresses.get(0).getAdminArea() + ", " +
                         addresses.get(0).getCountryName());
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
-    }
 }

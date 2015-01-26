@@ -75,9 +75,7 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 			transaction.add(R.id.container, new LoginFragment()).commit();
 		}
-
         gpsReceiver = new GPSReceiver(this);
-
         IntentFilter mLocationOnceFilter = new IntentFilter(Constants.BROAD_CAST_LOCATION_ONCE);
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(
                 gpsReceiver,
@@ -113,11 +111,24 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
 
     @Override
     public void onBackPressed() {
-        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
 
-            Log.i("MainActivity", "PopbackStack called.");
-            getSupportFragmentManager().popBackStack();
-            removeCurrentFragment();
+        /*  FragmentManager fragmentManager = this.getSupportFragmentManager();
+        String temp =fragmentManager.getBackStackEntryAt(fragmentManager.getBackStackEntryCount() - 1).getName();
+        Log.i("Main", temp);
+        if(temp.equals("fc")) {
+            fragmentManager.popBackStack("main", android.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        } else {
+            super.onBackPressed();
+        }*/
+        FragmentManager fm = getSupportFragmentManager();
+        int stackCount = fm.getBackStackEntryCount();
+        if (stackCount > 1) {
+            String temp =fm.getBackStackEntryAt(stackCount - 1).getName();
+            if(temp.equals("new")) {
+                fm.popBackStack("main", android.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            } else {
+                super.onBackPressed();
+            }
         } else {
             Log.i("MainActivity", "super.back called");
             super.onBackPressed();
@@ -160,28 +171,16 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
 		switch(id) {
 			case R.id.action_home:
 				Toast.makeText(getApplicationContext(), "To_home", Toast.LENGTH_SHORT).show();
-                int index = getSupportFragmentManager().getBackStackEntryCount();
-                while(index > 0) {
-
-                    getSupportFragmentManager().popBackStack();
-                    removeCurrentFragment();
-                    index--;
-                }
-
+                if(getSupportFragmentManager().getBackStackEntryCount() > 0)
+                    getSupportFragmentManager().popBackStack("main", android.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
 				break;
 			case R.id.action_new_trip:
-                index = getSupportFragmentManager().getBackStackEntryCount();
-                while(index > 0) {
-
-                    getSupportFragmentManager().popBackStack();
-                    removeCurrentFragment();
-                    index--;
-                }
+                if(getSupportFragmentManager().getBackStackEntryCount() > 0)
+                    getSupportFragmentManager().popBackStack("main", android.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 if(MainActivity.isRunning) {
                     Toast.makeText(getApplicationContext(), "There is currently a running trip.", Toast.LENGTH_SHORT).show();
 
                 } else {
-
                     FragmentManager fragmentManager2 = getSupportFragmentManager();
                     FragmentTransaction fragmentTransaction2 = fragmentManager2.beginTransaction();
                     NewTripFragment fragment2 = new NewTripFragment();
@@ -208,19 +207,14 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
                     Toast.makeText(getApplicationContext(), "There is no running trip.", Toast.LENGTH_SHORT).show();
                 }
                 Toast.makeText(getApplicationContext(), "Stop", Toast.LENGTH_SHORT).show();
-                if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-                    getSupportFragmentManager().popBackStack();
-                    removeCurrentFragment();
-                }
+
+                if(getSupportFragmentManager().getBackStackEntryCount() > 0)
+                    getSupportFragmentManager().popBackStack("main", android.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
                 break;
 		}
 		return false;
 	}
-
-    @Override
-    public void execute(MyLocation location) {
-        //Do nothing
-    }
 
     public void viewTrip() {
         if(MainActivity.isRunning) {
@@ -240,40 +234,27 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
         }
     }
 
+    @Override
+    public void execute() {
+        //Do nothing
+    }
+
     /**
      * Listener to catch the stop call.
-     * @param type
-     * @param latitude
-     * @param longitude
-     * @param note
+     * @param myLocation
      */
     @Override
-    public void executeForSingle(String type, double latitude, double longitude, String note) {
-        if(type == null) {
+    public void executeForSingle(MyLocation myLocation) {
+        if(myLocation.getType() == null) {
             return;
         }
         //when stop has been called
-        if(type.equals("stop")) {
-            MyLocation location = new MyLocation(type,
-                    latitude,
-                    longitude);
-            location.setNote(note);
-            LocationList locationList = LocationList.getInstance();
-            locationList.add(location);
-            DbAdapter db = new DbAdapter(getApplicationContext());
-            SQLiteDatabase sqlDb = db.getWritableDatabase();
-            Log.i(TAG, "Checking time string " + location.getTimeString());
-            sqlDb.execSQL("insert into trips (trip_id, truck_id, trip_type, type, latitude, longitude, time) " +
-                    "values (" + MainActivity.CURRENT_TRIP_ID + ", \"" + MainActivity.TRUCK_ID + "\", \"" + MainActivity.tripType + "\", \"" +
-                    location.getType() + "\", " +
-                    location.getLatitude() + ", " + location.getLongitude() + ", \"" + location.getTimeString() + "\")");
-            Log.i(TAG, type + " " + latitude + " " + longitude);
-            sqlDb.close();
-            db.close();
+        if(myLocation.getType().equals("stop")) {
             stopService(MainActivity.GPSIntent);
             //createKMLFile(locationList.getList()); //Currently, the server is generating.
             new HttpAsyncTask().execute(serverIp + "/add");
             new HttpPostMultiEntityAsyncTask().execute("");
+            //MainActivity.isRunning = false;
             Log.i(TAG,createJSON().toString());
         }
     }
@@ -283,8 +264,8 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
      * @return
      */
     public JSONObject createJSON() {
-        JSONObject jsonObject = new JSONObject();
 
+            // Load database
             DbAdapter db = new DbAdapter(getApplicationContext());
             SQLiteDatabase sqlDb = db.getReadableDatabase();
             Cursor cursor = sqlDb.rawQuery("select * from trips where trip_id=" + CURRENT_TRIP_ID + " order by id", null);
@@ -304,7 +285,7 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
 //        6 longti dobule
 //        7 time text
 //        8 note text
-
+          JSONObject jsonObject = new JSONObject();
             do {
                 JSONObject tempJson = new JSONObject();
                 try {
@@ -460,7 +441,7 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
-            Log.i(TAG, "RESULT: " + result);
+            Log.i(TAG, "RESULT on Json: " + result);
             Toast.makeText(getBaseContext(), "Data Sent! " + result, Toast.LENGTH_LONG).show();
             CURRENT_TRIP_ID = -1;
             LocationList.getInstance().clear();
@@ -516,6 +497,7 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
 
         @Override
         protected void onPostExecute(String result) {
+            Log.i(TAG, "RESULT on soundfiles: " + result);
             NoteList.getInstance().clear();
         }
     }
