@@ -42,7 +42,6 @@
             android:layout_weight="0.3"
             android:layout_height="wrap_content"
             android:layout_below="@+id/scroll_view"
-
             android:orientation="vertical"
             android:background="@drawable/stroke_bg"
             >
@@ -56,20 +55,22 @@
                 />
             <Button
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="85dp"
                 android:textSize="24sp"
                 android:text="@string/od_1"
                 android:id="@+id/origin_waiting_at_the_gate"/>
             <Button
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="85dp"
+                android:layout_marginTop="18dp"
                 android:textSize="24sp"
                 android:text="@string/od_2"
                 android:id="@+id/origin_terminal_gate_closed"
                 />
             <Button
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="85dp"
+                android:layout_marginTop="18dp"
                 android:textSize="24sp"
                 android:text="@string/od_3"
                 android:id="@+id/origin_filling_out_paperwork"
@@ -95,19 +96,21 @@
                 />
             <Button
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="85dp"
                 android:textSize="24sp"
                 android:text="@string/od_1"
                 android:id="@+id/destin_waiting_at_the_gate"/>
             <Button
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="85dp"
+                android:layout_marginTop="18dp"
                 android:textSize="24sp"
                 android:text="@string/od_2"
                 android:id="@+id/destin_terminal_gate_closed"/>
             <Button
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="85dp"
+                android:layout_marginTop="18dp"
                 android:textSize="24sp"
                 android:text="@string/od_3"
                 android:id="@+id/destin_filling_out_paperwork"/>
@@ -131,32 +134,32 @@
                 />
             <Button
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="85dp"
                 android:textSize="24sp"
                 android:text="@string/road_1"
                 android:id="@+id/road_traffic"/>
             <Button
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="85dp"
+                android:layout_marginTop="18dp"
                 android:textSize="24sp"
                 android:text="@string/road_2"
                 android:id="@+id/road_refueling"/>
             <Button
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="85dp"
+                android:layout_marginTop="18dp"
                 android:textSize="24sp"
                 android:text="@string/road_3"
                 android:id="@+id/road_equipment_problem"/>
         </LinearLayout>
     </LinearLayout>
-    
     <Button 
         android:layout_width="144dp"
-        android:layout_height="wrap_content"
+        android:layout_height="85dp"
         android:text="@string/note"
         android:textSize="24sp"
         android:id="@+id/note"
          android:layout_below="@+id/origin_layer"
          android:layout_alignLeft="@+id/origin_layer"/>
-    
 </LinearLayout>

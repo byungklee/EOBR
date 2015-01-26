@@ -23,9 +23,8 @@
             android:id="@+id/start_button_text"
             android:layout_width="280dp"
             android:layout_height="wrap_content"
-            android:text="START TRIP"
+            android:text="@string/action_new_trip"
             android:layout_marginRight="100dp"
-
             android:gravity="center"
             android:textSize="48sp"
             android:drawableTop="@drawable/app_icon_start"
@@ -35,8 +34,7 @@
             android:id="@+id/stop_button_text"
             android:layout_width="280dp"
             android:layout_height="wrap_content"
-            android:text="START TRIP"
-
+            android:text="@string/action_stop_trip"
             android:layout_marginLeft="100dp"
             android:gravity="center"
             android:textSize="48sp"
