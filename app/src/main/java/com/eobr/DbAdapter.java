@@ -16,10 +16,10 @@ public class DbAdapter extends SQLiteOpenHelper {
      */
     private static final String DATABASE_NAME = "eobrdb";
     private static final String TABLE_NAME = "trips";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
     private Context mContext;
 
-    private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS trips \n" +
+    private static final String CREATE_TABLE_TRIPS = "CREATE TABLE IF NOT EXISTS trips \n" +
             "(id integer primary key autoincrement,\n" +
             "trip_id integer not null,\n" +
             "truck_id text not null,\n" +
@@ -29,6 +29,10 @@ public class DbAdapter extends SQLiteOpenHelper {
             "longitude real not null,\n" +
             "time text not null, \n" +
             "note text);";
+
+    private static final String CREATE_TABLE_NOT_SENT = "CREATE TABLE IF NOT EXISTS notsent \n" +
+            "(trip_id integer not null)";
+
 
     /**
      *  Constructor
@@ -40,7 +44,8 @@ public class DbAdapter extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(CREATE_TABLE);
+        db.execSQL(CREATE_TABLE_TRIPS);
+        db.execSQL(CREATE_TABLE_NOT_SENT);
     }
 
     @Override

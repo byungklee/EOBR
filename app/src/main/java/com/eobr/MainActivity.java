@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 
@@ -49,24 +52,36 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Top level in hierarchy which handles required data and all the views are handled by this activity.
+ *
+ * The Main driver class.
+ * Top level in hierarchy which handles required data, and all the views are handled by this activity.
  */
-public class MainActivity extends ActionBarActivity implements GPSListener {
+public class MainActivity extends ActionBarActivity implements GPSListener, Callback {
 
-    public static boolean isRunning = false;
+    public enum ServiceState {READY, RUNNING, WAIT}
+    public static ServiceState state = ServiceState.READY;
+
     public static String tripType = "";
     public static String TRUCK_ID = "1";
     public static int CURRENT_TRIP_ID = -1;
     public static Intent GPSIntent;
     private static final String TAG = "MainActivity";
-    private static final String serverIp = "http://192.168.0.56:8888";
-    private static GPSReceiver gpsReceiver;
+    //private static final String serverIpAndPort = "http://134.139.249.76:8888";
+    public static final String serverIp = "http://134.139.249.76";
+    public static final int port = 8888;
+    public static final String serverIpAndPort = serverIp+":"+port;
+//    private static final String serverIp = "http://192.168.0.23";
 
+    private static GPSReceiver gpsReceiver;
+    private ResourceManager rm;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+
+        //Get the Mac Address to use it as Unique ID
         WifiManager manager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         WifiInfo info = manager.getConnectionInfo();
         TRUCK_ID = info.getMacAddress();
@@ -75,12 +90,19 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 			transaction.add(R.id.container, new LoginFragment()).commit();
 		}
+
+        //Register receiver to listen on stop.
         gpsReceiver = new GPSReceiver(this);
         IntentFilter mLocationOnceFilter = new IntentFilter(Constants.BROAD_CAST_LOCATION_ONCE);
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(
                 gpsReceiver,
                 mLocationOnceFilter);
-		getOverflowMenu();		
+		getOverflowMenu();
+
+        DbAdapter db = new DbAdapter(getApplicationContext());
+        db.onCreate(db.getWritableDatabase());
+        rm = new ResourceManager(this);
+        rm.execute();
 	}
 
     @Override
@@ -111,15 +133,6 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
 
     @Override
     public void onBackPressed() {
-
-        /*  FragmentManager fragmentManager = this.getSupportFragmentManager();
-        String temp =fragmentManager.getBackStackEntryAt(fragmentManager.getBackStackEntryCount() - 1).getName();
-        Log.i("Main", temp);
-        if(temp.equals("fc")) {
-            fragmentManager.popBackStack("main", android.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        } else {
-            super.onBackPressed();
-        }*/
         FragmentManager fm = getSupportFragmentManager();
         int stackCount = fm.getBackStackEntryCount();
         if (stackCount > 1) {
@@ -147,6 +160,12 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
         }
     }
 
+    @Override
+    public void callback() {
+        Log.i(TAG, "callback for http request");
+        new HttpJsonAsyncTask().execute(serverIp+":"+port + "/add");
+        new HttpPostMultiEntityAsyncTask().execute("");
+    }
 
     @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -177,7 +196,7 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
 			case R.id.action_new_trip:
                 if(getSupportFragmentManager().getBackStackEntryCount() > 0)
                     getSupportFragmentManager().popBackStack("main", android.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                if(MainActivity.isRunning) {
+                if(MainActivity.state == ServiceState.RUNNING) {
                     Toast.makeText(getApplicationContext(), "There is currently a running trip.", Toast.LENGTH_SHORT).show();
 
                 } else {
@@ -185,19 +204,19 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
                     FragmentTransaction fragmentTransaction2 = fragmentManager2.beginTransaction();
                     NewTripFragment fragment2 = new NewTripFragment();
                     fragmentTransaction2.replace(R.id.container, fragment2);
-                    fragmentTransaction2.addToBackStack(null);
+                    fragmentTransaction2.addToBackStack("main");
                     fragmentTransaction2.commit();
                 }
-
 				break;
 			case R.id.action_view_trip:
 				Toast.makeText(getApplicationContext(), "View", Toast.LENGTH_SHORT).show();
                 viewTrip();
 				break;
             case R.id.action_stop_trip:
-                if(MainActivity.isRunning) {
-
-                    isRunning = false;
+                if(MainActivity.state == ServiceState.RUNNING) {
+                    state = ServiceState.WAIT;
+//                    isRunning = false;
+//                    wait = true;
                     Intent i = new Intent(getApplicationContext(), GPSIntentService.class);
                     i.putExtra("type", "stop");
                     startService(i);
@@ -217,7 +236,7 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
 	}
 
     public void viewTrip() {
-        if(MainActivity.isRunning) {
+        if(MainActivity.state == ServiceState.RUNNING) {
             if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
                 getSupportFragmentManager().popBackStack();
                 removeCurrentFragment();
@@ -243,32 +262,57 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
      * Listener to catch the stop call.
      * @param myLocation
      */
+
     @Override
     public void executeForSingle(MyLocation myLocation) {
         if(myLocation.getType() == null) {
             return;
         }
         //when stop has been called
+
         if(myLocation.getType().equals("stop")) {
             stopService(MainActivity.GPSIntent);
-            //createKMLFile(locationList.getList()); //Currently, the server is generating.
-            new HttpAsyncTask().execute(serverIp + "/add");
-            new HttpPostMultiEntityAsyncTask().execute("");
-            //MainActivity.isRunning = false;
-            Log.i(TAG,createJSON().toString());
+            Log.i(TAG, "Execute Server status");
+            new HttpAsyncCheckServerStatus(serverIp, port, this).execute();
         }
+
+//        else {
+//            Log.i(TAG, "The server is not available.\n saving data in database.");
+////            saveData();
+////            NoteList.getInstance().clear();
+////            LocationList.getInstance().clear();
+////            MainActivity.state = ServiceState.READY;
+//        }
+
+//        if(myLocation.getType().equals("stop")) {
+//            stopService(MainActivity.GPSIntent);
+//            //createKMLFile(locationList.getList()); //Currently, the server is generating.
+//            //new com.eobr.HttpPost.HttpAsyncCheckServerStatus(new Callback() {
+//
+//                @Override
+//                public void callback() {
+//                    new HttpAsyncTask().execute(serverIp + "/add");
+//                    new HttpPostMultiEntityAsyncTask().execute("");
+//                }
+//            }).execute();
+
+            //MainActivity.isRunning = false;
+
+
+        Log.i(TAG,"Execute FOR SINGLE " + createJSON(CURRENT_TRIP_ID).toString());
+
     }
 
     /**
      * Create JSON from the database
      * @return
      */
-    public JSONObject createJSON() {
+    public JSONObject createJSON(int trip_id) {
 
             // Load database
             DbAdapter db = new DbAdapter(getApplicationContext());
             SQLiteDatabase sqlDb = db.getReadableDatabase();
-            Cursor cursor = sqlDb.rawQuery("select * from trips where trip_id=" + CURRENT_TRIP_ID + " order by id", null);
+            Cursor cursor = sqlDb.rawQuery("select * from trips where trip_id=" + trip_id + " order by id", null);
 
             Log.i(TAG, "cusor count " + cursor.getCount());
             if( cursor.getCount() < 1)
@@ -369,7 +413,7 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
     }
 
     //Post Json
-    public static String POST(String url, JSONObject jsonObj){
+    public String POST(String url, JSONObject jsonObj){
         InputStream inputStream = null;
         String result = "";
         try {
@@ -414,11 +458,25 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
 
         } catch (Exception e) {
             Log.d(TAG, e.getLocalizedMessage());
+            e.printStackTrace();
+         //   DbAdapter db = new DbAdapter(getApplicationContext());
+            saveData();
         }
         Log.i(TAG, "RESULT: " + result);
         // 11. return result
         return result;
     }
+
+    public void saveData() {
+        DbAdapter db = new DbAdapter(getApplicationContext());
+        SQLiteDatabase sqlDb = db.getWritableDatabase();
+        sqlDb.rawQuery("insert into notsent (trip_id) values (\"" +MainActivity.CURRENT_TRIP_ID + "\")", null);
+
+    }
+
+    /**
+     *  TO DO: Refactor below here
+     */
 
     private static String convertInputStreamToString(InputStream inputStream) throws IOException{
         BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
@@ -432,18 +490,20 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
     }
 
     //to post json.
-    private class HttpAsyncTask extends AsyncTask<String, Void, String> {
+    private class HttpJsonAsyncTask extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... urls) {
-            LocationList.getInstance().getList();
-            return POST(urls[0], createJSON());
+            Log.i(TAG, "JSON HTTP HAS CALLED");
+//            LocationList.getInstance().getList();
+            return POST(urls[0], createJSON(CURRENT_TRIP_ID));
         }
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
             Log.i(TAG, "RESULT on Json: " + result);
-            Toast.makeText(getBaseContext(), "Data Sent! " + result, Toast.LENGTH_LONG).show();
+            Toast.makeText(getBaseContext(), "Data Sent!", Toast.LENGTH_LONG).show();
             CURRENT_TRIP_ID = -1;
+            state = ServiceState.READY;
             LocationList.getInstance().clear();
         }
     }
@@ -453,10 +513,12 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
 
         @Override
         protected String doInBackground(String... params) {
+            Log.i(TAG, "FIle HTTP HAS CALLED");
+            String result="";
             try
             {
                 HttpClient client = new DefaultHttpClient();
-                HttpPost post = new HttpPost(serverIp+"/uploadfile");
+                HttpPost post = new HttpPost(serverIp+":"+port+"/uploadfile");
                 post.setHeader("enctype", "multipart/form-data");
                 MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
                 entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
@@ -483,16 +545,17 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
 
                 HttpEntity httpEntity = response.getEntity();
 
-                String result = EntityUtils.toString(httpEntity);
+                result = EntityUtils.toString(httpEntity);
 
                 Log.v("result", result);
             }
             catch(Exception e)
             {
+
                 e.printStackTrace();
             }
 
-            return null;
+            return result;
         }
 
         @Override
@@ -502,6 +565,43 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
         }
     }
 
+    public class HttpAsyncCheckServerStatus extends AsyncTask<Void,Void,Void> {
 
+        private Callback callback;
+        private String serverIp;
+        int port;
+        public HttpAsyncCheckServerStatus(String serverIp, int port, Callback callback) {
+            this.callback = callback;
+            this.serverIp = serverIp;
+            this.port = port;
+        }
 
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                URL url = new URL(serverIp + ":" + port);
+                HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
+                urlConn.setConnectTimeout(3000);
+                urlConn.connect();
+                urlConn.disconnect();
+                this.callback.callback();
+            } catch(MalformedURLException e) {
+                System.err.println("Error creating HTTP connection");
+                toInitialStateWithSavingData();
+            } catch(IOException e) {
+                System.err.println("Error creating HTTP connection");
+                toInitialStateWithSavingData();
+            }
+            return null;
+        }
+    }
+
+    public void toInitialStateWithSavingData() {
+        Log.i(TAG, "To initail State");
+        saveData();
+        NoteList.getInstance().clear();
+        LocationList.getInstance().clear();
+        CURRENT_TRIP_ID = -1;
+        state = ServiceState.READY;
+    }
 }

@@ -3,6 +3,8 @@ package com.eobr;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -96,6 +98,21 @@ public class NewTripFragment extends Fragment implements GPSListener {
 
 			@Override
 			public void onClick(View v) {
+
+
+                if(MainActivity.CURRENT_TRIP_ID == -1) {
+                    DbAdapter db = new DbAdapter(getActivity().getApplicationContext());
+                    SQLiteDatabase sqlDb = db.getReadableDatabase();
+                    String query="select trip_id from trips order by trip_id desc";
+                    Cursor curs=sqlDb.rawQuery(query, null);
+                    curs.moveToFirst();
+                    if(curs.getCount() != 0) {
+                        MainActivity.CURRENT_TRIP_ID = curs.getInt(0)+1;
+                    } else
+                        MainActivity.CURRENT_TRIP_ID = 1;
+                    curs.close();
+                }
+
 				// TODO Auto-generated method stub
                 MainActivity.GPSIntent = new Intent(getActivity().getApplicationContext(), GPSService.class);
                 getActivity().startService(MainActivity.GPSIntent);
@@ -106,7 +123,8 @@ public class NewTripFragment extends Fragment implements GPSListener {
                 frt.replace(R.id.container, sfm);
                 frt.addToBackStack("new");
                 frt.commit();
-                MainActivity.isRunning = true;
+               // MainActivity.isRunning = true;
+                MainActivity.state = MainActivity.ServiceState.RUNNING;
 
                 int checkedRadioButtonId = mTripTypeRadio.getCheckedRadioButtonId();
 
@@ -131,6 +149,8 @@ public class NewTripFragment extends Fragment implements GPSListener {
         return v;
     }
 
+
+
     @Override
     public void execute(){}
 
@@ -141,17 +161,18 @@ public class NewTripFragment extends Fragment implements GPSListener {
     @Override
     public void executeForSingle(MyLocation ml) {
         try{
-            Log.i("NewTrip", ml.getLatitude() + " " + ml.getLongitude());
-            Geocoder geo = new Geocoder(mContext, Locale.getDefault());
-            List<Address> addresses = geo.getFromLocation(ml.getLatitude(), ml.getLongitude(), 1);
-            if (addresses.isEmpty()) {
-                mOriginTextView.setText("Waiting for Location");
-            }
-            else {
-                mOriginTextView.setText(addresses.get(0).getAddressLine(0) + ", " +
-                        addresses.get(0).getLocality() +", " +
-                        addresses.get(0).getAdminArea() + ", " +
-                        addresses.get(0).getCountryName());
+            Log.i("NewTrip", ml.getLatitude() + " " + ml.getLongitude() + " " + ml.getType());
+            if(ml.getType() == null) {
+                Geocoder geo = new Geocoder(mContext, Locale.getDefault());
+                List<Address> addresses = geo.getFromLocation(ml.getLatitude(), ml.getLongitude(), 1);
+                if (addresses.isEmpty()) {
+                    mOriginTextView.setText("Waiting for Location");
+                } else {
+                    mOriginTextView.setText(addresses.get(0).getAddressLine(0) + ", " +
+                            addresses.get(0).getLocality() + ", " +
+                            addresses.get(0).getAdminArea() + ", " +
+                            addresses.get(0).getCountryName());
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

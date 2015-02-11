@@ -2,6 +2,10 @@ package com.eobr;
 
 import android.text.format.Time;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONStringer;
+
 /**
  * Created by byung on 12/5/14.
  *
@@ -16,6 +20,7 @@ public class MyLocation {
     private double latitude;
     private double longitude;
     private Time time;
+    private JSONObject jsonTime;
 
     /**
      * Constructor
@@ -30,6 +35,18 @@ public class MyLocation {
         time = new Time();
         time.setToNow();
         note = "";
+        jsonTime = new JSONObject();
+        try {
+            jsonTime.accumulate("day", time.monthDay);
+            jsonTime.accumulate("month", time.month+1);
+            jsonTime.accumulate("year", time.year);
+            jsonTime.accumulate("time", time.format("%k:%M:%S").trim());
+        } catch(JSONException e) {
+            e.printStackTrace();
+        }
+        //JSONObject("{df");
+
+
     }
 
     /**
@@ -61,8 +78,12 @@ public class MyLocation {
 
     public String getTimeString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(time.month).append("/").append(time.monthDay).append("/").append(time.year).append(" ").append(time.format("%k:%M:%S"));
+        sb.append(time.month+1).append("/").append(time.monthDay).append("/").append(time.year).append(" ").append(time.format("%k:%M:%S"));
         return sb.toString();
+    }
+
+    public String getJsonTime() {
+        return jsonTime.toString();
     }
 
     public String getType() {

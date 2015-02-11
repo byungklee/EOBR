@@ -28,23 +28,12 @@ public class GPSReceiver extends BroadcastReceiver {
         Log.i("GPSReceiver", "GPS info has been received " + intent.getAction() + " " + intent.getType() );
         if(intent.getAction().equals(Constants.BROAD_CAST_LOCATION)) {
             Log.i("GPSReceiver", "constant" );
-//            MyLocation location = new MyLocation(intent.getStringExtra("type"),
-//                    intent.getDoubleExtra("latitude", 0),
-//                    intent.getDoubleExtra("longitude", 0));
-//            LocationList ll = LocationList.getInstance();
-//            ll.add(location);
             gpsListener.execute();
         } else if(intent.getAction().equals(Constants.BROAD_CAST_LOCATION_ONCE)) {
             MyLocation location = new MyLocation(intent.getStringExtra("type"),
                     intent.getDoubleExtra("latitude", 0),
                     intent.getDoubleExtra("longitude", 0));
-//            String noteTemp = intent.getStringExtra("note");
             gpsListener.executeForSingle(location);
-//            if(noteTemp != null) {
-//                gpsListener.executeForSingle(location.getType(), location.getLatitude(), location.getLongitude(), noteTemp);
-//            } else {
-//                gpsListener.executeForSingle(location.getType(), location.getLatitude(), location.getLongitude(), null);
-//            }
         }
     }
 }

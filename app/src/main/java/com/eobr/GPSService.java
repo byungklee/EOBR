@@ -26,6 +26,7 @@ public class GPSService extends Service implements LocationListener {
     private LocationManager locationManager;
     private final String type = "Running";
     private boolean isFirst;
+    public static final int INTERVAL = 10000;
 
     public GPSService() {
     }
@@ -34,7 +35,7 @@ public class GPSService extends Service implements LocationListener {
     public void onStart(Intent intent, int startId) {
         super.onStart(intent, startId);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, this);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, INTERVAL, 0, this);
         Log.i(TAG, "Gps Service Enabled");
         Toast.makeText(getApplicationContext(), "GPS Service Enabled", Toast.LENGTH_SHORT).show();
         isFirst = true;
@@ -70,22 +71,10 @@ public class GPSService extends Service implements LocationListener {
     private void saveData(MyLocation location) {
         DbAdapter db = new DbAdapter(getApplicationContext());
 
-        if(MainActivity.CURRENT_TRIP_ID == -1) {
-            SQLiteDatabase sqlDb = db.getReadableDatabase();
-            String query="select trip_id from trips order by trip_id desc";
-            Cursor curs=sqlDb.rawQuery(query, null);
-            curs.moveToFirst();
-            if(curs.getCount() != 0) {
-                MainActivity.CURRENT_TRIP_ID = curs.getInt(0)+1;
-            } else
-                MainActivity.CURRENT_TRIP_ID = 1;
-            curs.close();
-        }
-
         SQLiteDatabase sqlDb = db.getWritableDatabase();
         sqlDb.execSQL("insert into trips (trip_id, truck_id, trip_type, type, latitude, longitude, time) " +
                 "values (" + MainActivity.CURRENT_TRIP_ID + ", \"" +MainActivity.TRUCK_ID + "\", \"" + MainActivity.tripType + "\", \"" + location.getType() + "\", " +
-                location.getLatitude() + ", " + location.getLongitude() + ", \"" + location.getTimeString() + "\")");
+                location.getLatitude() + ", " + location.getLongitude() + ", \'" + location.getJsonTime() + "\')");
         sqlDb.close();
         db.close();
 

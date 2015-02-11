@@ -38,7 +38,7 @@ public class LoginFragment extends Fragment {
 		mStopButtonText = (TextView) rootView.findViewById(R.id.stop_button_text);
 
         mStartButtonText = (TextView) rootView.findViewById(R.id.start_button_text);
-        if(MainActivity.isRunning) {
+        if(MainActivity.state == MainActivity.ServiceState.RUNNING) {
             mStartButtonText.setText("To Status");
         }
 
@@ -48,7 +48,7 @@ public class LoginFragment extends Fragment {
 			
 			@Override
 			public void onClick(View v) {
-                if(!MainActivity.isRunning) {
+                if(MainActivity.state == MainActivity.ServiceState.READY) {
                     FragmentManager fragmentManager2 = getFragmentManager();
                     FragmentTransaction fragmentTransaction2 = fragmentManager2.beginTransaction();
                     NewTripFragment fragment2 = new NewTripFragment();
@@ -58,7 +58,7 @@ public class LoginFragment extends Fragment {
                     fragmentTransaction2.replace(R.id.container, fragment2);
                     fragmentTransaction2.addToBackStack("main");
                     fragmentTransaction2.commit();
-                } else {
+                } else if(MainActivity.state == MainActivity.ServiceState.RUNNING) {
                     FragmentManager fm = getFragmentManager();
                     FragmentTransaction frt = fm.beginTransaction();
                     StatusFragment sfm = new StatusFragment();
@@ -75,7 +75,10 @@ public class LoginFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-                if(MainActivity.isRunning) {
+                if(MainActivity.state == MainActivity.ServiceState.RUNNING) {
+                    MainActivity.state = MainActivity.ServiceState.WAIT;
+//                    MainActivity.isRunning = false;
+//                    MainActivity.wait = true;
                     Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
                     i.putExtra("type", "stop");
                     getActivity().startService(i);
@@ -85,6 +88,16 @@ public class LoginFragment extends Fragment {
                 }
 			}
 		});
+
+        ((Button) rootView.findViewById(R.id.testButton)).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("Test Button has pressed " + MainActivity.state);
+                //ResourceManager rm = new ResourceManager(getActivity().getApplicationContext());
+                //rm.printFiles();
+
+            }
+        });
 
 		return rootView;
 	}
