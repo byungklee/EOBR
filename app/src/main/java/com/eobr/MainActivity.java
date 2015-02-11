@@ -36,6 +36,11 @@ import android.view.MenuItem;
 import android.view.ViewConfiguration;
 import android.widget.Toast;
 
+import com.eobr.model.LocationList;
+import com.eobr.model.MyLocation;
+import com.eobr.model.NoteList;
+import com.eobr.resource.ResourceManager;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -67,13 +72,14 @@ public class MainActivity extends ActionBarActivity implements GPSListener, Call
     public static Intent GPSIntent;
     private static final String TAG = "MainActivity";
     //private static final String serverIpAndPort = "http://134.139.249.76:8888";
-    public static final String serverIp = "http://134.139.249.76";
+//    public static final String serverIp = "http://134.139.249.76";
+    public static final String serverIp = "http://192.168.0.56";
     public static final int port = 8888;
     public static final String serverIpAndPort = serverIp+":"+port;
 //    private static final String serverIp = "http://192.168.0.23";
 
     private static GPSReceiver gpsReceiver;
-    private ResourceManager rm;
+    public static ResourceManager rm;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -470,8 +476,7 @@ public class MainActivity extends ActionBarActivity implements GPSListener, Call
     public void saveData() {
         DbAdapter db = new DbAdapter(getApplicationContext());
         SQLiteDatabase sqlDb = db.getWritableDatabase();
-        sqlDb.rawQuery("insert into notsent (trip_id) values (\"" +MainActivity.CURRENT_TRIP_ID + "\")", null);
-
+        sqlDb.execSQL("insert into notsent (trip_id) values (\"" + MainActivity.CURRENT_TRIP_ID + "\")");
     }
 
     /**
@@ -586,10 +591,10 @@ public class MainActivity extends ActionBarActivity implements GPSListener, Call
                 urlConn.disconnect();
                 this.callback.callback();
             } catch(MalformedURLException e) {
-                System.err.println("Error creating HTTP connection");
+                Log.e(TAG,"Error creating HTTP connection");
                 toInitialStateWithSavingData();
             } catch(IOException e) {
-                System.err.println("Error creating HTTP connection");
+                Log.e(TAG, "Error creating HTTP connection");
                 toInitialStateWithSavingData();
             }
             return null;

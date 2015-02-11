@@ -36,18 +36,21 @@ import java.util.List;
 public class HttpPost {
     private static final String TAG = "HTTPPOST";
     private Context ctx;
+    private Callback callback;
 //    private static final String serverIpAndPort = "http://192.168.0.23:8888";
 //private static final String serverIpAndPort = "http://134.139.249.76:8888";
 //    private static final String serverIp = "http://134.139.249.76";
 //    private static final String serverIp="http://192.168.0.23";
  //   private static final int port = 8888;
     private List list;
+
     public HttpPost(Context ctx) {
         this.ctx= ctx;
     }
-    public HttpPost(Context ctx, List list) {
+    public HttpPost(Context ctx, List list, Callback callback) {
         this.ctx= ctx;
         this.list = list;
+        this.callback = callback;
     }
 
     public void resend(final int trip_id) {
@@ -155,7 +158,7 @@ public class HttpPost {
             //   DbAdapter db = new DbAdapter(getApplicationContext());
             //saveData();
         }
-        Log.i(TAG, "RESULT: " + result);
+        //Log.i(TAG, "RESULT: " + result);
         // 11. return result
         return result;
     }
@@ -217,15 +220,17 @@ public class HttpPost {
         @Override
         protected String doInBackground(String... urls) {
 
-            return POST(MainActivity.serverIpAndPort, createJSON(trip_id));
+            return POST(MainActivity.serverIpAndPort+"/add", createJSON(trip_id));
         }
 
         @Override
         protected void onPostExecute(String result) {
             Log.i(TAG, "RESULT on Json: " + result);
 
-            if(result != null) {
+            if(result != null || result.equals("Success!")) {
+                Log.i(TAG, "removing from unsentList");
                 list.remove(new Integer(trip_id));
+                callback.callback();
             }
         }
     }
@@ -312,7 +317,5 @@ public class HttpPost {
           //  NoteList.getInstance().clear();
         }
     }
-
-
 
 }

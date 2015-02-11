@@ -12,6 +12,9 @@ import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.eobr.model.LocationList;
+import com.eobr.model.MyLocation;
+
 /**
  * GPSIntentService is to service the GPS request once.
  *

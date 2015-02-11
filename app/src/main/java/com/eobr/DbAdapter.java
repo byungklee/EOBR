@@ -16,7 +16,7 @@ public class DbAdapter extends SQLiteOpenHelper {
      */
     private static final String DATABASE_NAME = "eobrdb";
     private static final String TABLE_NAME = "trips";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
     private Context mContext;
 
     private static final String CREATE_TABLE_TRIPS = "CREATE TABLE IF NOT EXISTS trips \n" +
@@ -31,7 +31,7 @@ public class DbAdapter extends SQLiteOpenHelper {
             "note text);";
 
     private static final String CREATE_TABLE_NOT_SENT = "CREATE TABLE IF NOT EXISTS notsent \n" +
-            "(trip_id integer not null)";
+            "(trip_id integer primary key not null)";
 
 
     /**

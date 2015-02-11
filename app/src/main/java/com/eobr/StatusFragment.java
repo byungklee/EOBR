@@ -15,6 +15,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.eobr.model.LocationList;
+import com.eobr.model.MyLocation;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link StatusFragment#newInstance} factory method to

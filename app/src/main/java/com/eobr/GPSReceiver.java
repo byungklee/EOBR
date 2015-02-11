@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.eobr.model.MyLocation;
+
 /**
  * GPSReceiver is a listener. for GPS work and signals to whoever is listening.
  */

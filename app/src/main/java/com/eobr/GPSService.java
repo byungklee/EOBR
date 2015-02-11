@@ -3,7 +3,6 @@ package com.eobr;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.location.LocationListener;
@@ -13,6 +12,9 @@ import android.os.IBinder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.eobr.model.LocationList;
+import com.eobr.model.MyLocation;
 
 /**
  * GPSService to service the location update constantly while running

@@ -1,5 +1,7 @@
 package com.eobr;
 
+import com.eobr.model.MyLocation;
+
 /**
  * Created by byung on 12/3/14.
  */
