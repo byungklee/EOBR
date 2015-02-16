@@ -27,8 +27,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by byung on 2/6/15.
@@ -43,14 +45,14 @@ public class HttpPost {
 //    private static final String serverIp="http://192.168.0.23";
  //   private static final int port = 8888;
     private List list;
+    private Map container;
 
-    public HttpPost(Context ctx) {
-        this.ctx= ctx;
-    }
+    public HttpPost(Context ctx) { this.ctx= ctx; }
     public HttpPost(Context ctx, List list, Callback callback) {
         this.ctx= ctx;
         this.list = list;
         this.callback = callback;
+        container = new HashMap();
     }
 
     public void resend(final int trip_id) {
@@ -229,8 +231,7 @@ public class HttpPost {
 
             if(result != null || result.equals("Success!")) {
                 Log.i(TAG, "removing from unsentList");
-                list.remove(new Integer(trip_id));
-                callback.callback();
+                checkTripId(trip_id);
             }
         }
     }
@@ -299,6 +300,7 @@ public class HttpPost {
 
                 HttpEntity httpEntity = response.getEntity();
 
+
                 result = EntityUtils.toString(httpEntity);
 
                 Log.v("result", result);
@@ -314,8 +316,20 @@ public class HttpPost {
         @Override
         protected void onPostExecute(String result) {
             Log.i(TAG, "RESULT on soundfiles: " + result);
-          //  NoteList.getInstance().clear();
+            if(result != null || result.equals("Success!")) {
+                Log.i(TAG, "removing from unsentList");
+                checkTripId(trip_id);
+            }
         }
     }
 
+    public void checkTripId(int trip_id) {
+        if(container.containsKey(trip_id)) {
+            list.remove(new Integer(trip_id));
+            callback.callback();
+            container.remove(trip_id);
+        } else {
+            container.put(trip_id, true);
+        }
+    }
 }

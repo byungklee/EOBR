@@ -72,8 +72,8 @@ public class MainActivity extends ActionBarActivity implements GPSListener, Call
     public static Intent GPSIntent;
     private static final String TAG = "MainActivity";
     //private static final String serverIpAndPort = "http://134.139.249.76:8888";
-//    public static final String serverIp = "http://134.139.249.76";
-    public static final String serverIp = "http://192.168.0.56";
+    public static final String serverIp = "http://134.139.249.76";
+//    public static final String serverIp = "http://192.168.0.56";
     public static final int port = 8888;
     public static final String serverIpAndPort = serverIp+":"+port;
 //    private static final String serverIp = "http://192.168.0.23";
@@ -418,6 +418,28 @@ public class MainActivity extends ActionBarActivity implements GPSListener, Call
         return false;
     }
 
+
+
+    public void saveData() {
+        DbAdapter db = new DbAdapter(getApplicationContext());
+        SQLiteDatabase sqlDb = db.getWritableDatabase();
+        sqlDb.execSQL("insert into notsent (trip_id) values (\"" + MainActivity.CURRENT_TRIP_ID + "\")");
+    }
+
+    /**
+     *  TO DO: Refactor may needed below here
+     */
+    private static String convertInputStreamToString(InputStream inputStream) throws IOException{
+        BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
+        String line = "";
+        String result = "";
+        while((line = bufferedReader.readLine()) != null)
+            result += line;
+
+        inputStream.close();
+        return result;
+    }
+
     //Post Json
     public String POST(String url, JSONObject jsonObj){
         InputStream inputStream = null;
@@ -465,32 +487,11 @@ public class MainActivity extends ActionBarActivity implements GPSListener, Call
         } catch (Exception e) {
             Log.d(TAG, e.getLocalizedMessage());
             e.printStackTrace();
-         //   DbAdapter db = new DbAdapter(getApplicationContext());
+            //   DbAdapter db = new DbAdapter(getApplicationContext());
             saveData();
         }
         Log.i(TAG, "RESULT: " + result);
         // 11. return result
-        return result;
-    }
-
-    public void saveData() {
-        DbAdapter db = new DbAdapter(getApplicationContext());
-        SQLiteDatabase sqlDb = db.getWritableDatabase();
-        sqlDb.execSQL("insert into notsent (trip_id) values (\"" + MainActivity.CURRENT_TRIP_ID + "\")");
-    }
-
-    /**
-     *  TO DO: Refactor below here
-     */
-
-    private static String convertInputStreamToString(InputStream inputStream) throws IOException{
-        BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
-        String line = "";
-        String result = "";
-        while((line = bufferedReader.readLine()) != null)
-            result += line;
-
-        inputStream.close();
         return result;
     }
 

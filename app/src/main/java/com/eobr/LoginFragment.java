@@ -53,23 +53,21 @@ public class LoginFragment extends Fragment {
 			
 			@Override
 			public void onClick(View v) {
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 if(MainActivity.state == MainActivity.ServiceState.READY) {
-                    FragmentManager fragmentManager2 = getFragmentManager();
-                    FragmentTransaction fragmentTransaction2 = fragmentManager2.beginTransaction();
                     NewTripFragment fragment2 = new NewTripFragment();
 
-                    //What is happening with replace is that
+                    //What is happening with transaction.replace is that
                     //remove(fragment1).add(fragment2)
-                    fragmentTransaction2.replace(R.id.container, fragment2);
-                    fragmentTransaction2.addToBackStack("main");
-                    fragmentTransaction2.commit();
+                    fragmentTransaction.replace(R.id.container, fragment2);
+                    fragmentTransaction.addToBackStack("main");
+                    fragmentTransaction.commit();
                 } else if(MainActivity.state == MainActivity.ServiceState.RUNNING) {
-                    FragmentManager fm = getFragmentManager();
-                    FragmentTransaction frt = fm.beginTransaction();
                     StatusFragment sfm = new StatusFragment();
-                    frt.replace(R.id.container, sfm);
-                    frt.addToBackStack("main");
-                    frt.commit();
+                    fragmentTransaction.replace(R.id.container, sfm);
+                    fragmentTransaction.addToBackStack("main");
+                    fragmentTransaction.commit();
                 }
             }
 		});
@@ -82,8 +80,6 @@ public class LoginFragment extends Fragment {
 				// TODO Auto-generated method stub
                 if(MainActivity.state == MainActivity.ServiceState.RUNNING) {
                     MainActivity.state = MainActivity.ServiceState.WAIT;
-//                    MainActivity.isRunning = false;
-//                    MainActivity.wait = true;
                     Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
                     i.putExtra("type", "stop");
                     getActivity().startService(i);
@@ -94,6 +90,12 @@ public class LoginFragment extends Fragment {
 			}
 		});
 
+        /**
+         * Debug Purpose
+         */
+        ((Button) rootView.findViewById(R.id.testButton)).setVisibility(Button.INVISIBLE);
+        ((Button) rootView.findViewById(R.id.testButton2)).setVisibility(Button.INVISIBLE);
+        ((Button) rootView.findViewById(R.id.testButton3)).setVisibility(Button.INVISIBLE);
         ((Button) rootView.findViewById(R.id.testButton)).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,8 +105,6 @@ public class LoginFragment extends Fragment {
 
                 //Create a test case:
                 MainActivity.rm.execute();
-
-
             }
         });
         ((Button) rootView.findViewById(R.id.testButton2)).setOnClickListener(new OnClickListener() {
@@ -113,27 +113,20 @@ public class LoginFragment extends Fragment {
                 System.out.println("Test2 Button has pressed " + MainActivity.state);
                 //ResourceManager rm = new ResourceManager(getActivity().getApplicationContext());
                 //rm.printFiles();
-
                 //Create a test case:
-
                 testcaseForResourceManager();
             }
         });
-
         ((Button) rootView.findViewById(R.id.testButton3)).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 System.out.println("Test3 Button has pressed " + MainActivity.state);
                 //ResourceManager rm = new ResourceManager(getActivity().getApplicationContext());
                 //rm.printFiles();
-
                 //Create a test case:
                 testcaseTest();
-
             }
         });
-
-
 
 		return rootView;
 	}
@@ -148,8 +141,6 @@ public class LoginFragment extends Fragment {
         Log.i("Login", "" + cur.getCount());
         db.close();
         sqlDb.close();
-
-
     }
 
     public void testcaseForResourceManager() {
@@ -175,11 +166,6 @@ public class LoginFragment extends Fragment {
         db.close();
         sqlDb.close();
         readDb.close();
-
-        //{"trip_id":16,"id":54,"time":"{\"month\":2,\"time\":\"15:49:27\",\"year\":2015,\"day\":9}",
-        // "trip_type":"pickup_empty","longitude":-118.03228541,"latitude":33.79477331,
-        // "type":"start","truck_id":"64:89:9a:8f:22:91"}
-
     }
 
     public static void setStartButton(boolean flag) {
