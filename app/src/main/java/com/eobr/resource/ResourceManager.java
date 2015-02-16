@@ -86,19 +86,20 @@ public class ResourceManager implements Callback {
     }
 
     public void checkUnsent() {
-        Log.i(TAG, "checking unsent data");
+
         DbAdapter db = new DbAdapter(ctx);
         SQLiteDatabase sqlDB = db.getReadableDatabase();
         Cursor cur = sqlDB.rawQuery("select * from notsent", null);
         if(cur.getCount() != 0) {
             cur.moveToFirst();
             do {
-                if(unSentIdList.contains(cur.getInt(0)));
+                if(!unSentIdList.contains(cur.getInt(0)))
                     unSentIdList.add(cur.getInt(0));
             } while(cur.moveToNext());
         }
         db.close();
         sqlDB.close();
+        Log.i(TAG, "checking unsent data " + unSentIdList.size());
     }
 
     private int dateToInt(int year, int month, int day) {
@@ -192,6 +193,7 @@ public class ResourceManager implements Callback {
     public void callback() {
         cleanDatabase();
         cleanFiles();
+        unSentIdList.clear();
     }
 
     private class InternalStorageCleaner extends AsyncTask<Void,Void,Void>

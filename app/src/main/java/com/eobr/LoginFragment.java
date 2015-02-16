@@ -18,6 +18,8 @@ import android.widget.Toast;
 
 import com.eobr.model.MyLocation;
 
+import java.io.File;
+
 /**
  * LoginFragment shows two main buttons: Start and Stop. This interface is to start a new trip or to stop a trip.
  */
@@ -104,7 +106,19 @@ public class LoginFragment extends Fragment {
                 //rm.printFiles();
 
                 //Create a test case:
-                MainActivity.rm.execute();
+                //MainActivity.rm.execute();
+
+                //Clear all
+                DbAdapter db = new DbAdapter(getActivity().getApplicationContext());
+                SQLiteDatabase dbs = db.getWritableDatabase();
+                dbs.execSQL("delete from notsent where trip_id > 0");
+                File[] files = getActivity().getApplicationContext().getFilesDir().listFiles();
+                //System.out.println("Cleaning File\n number of files is " + files.length);
+                for(File f: files) {
+                    f.delete();
+                }
+                System.out.println("Cleaned ALL");
+
             }
         });
         ((Button) rootView.findViewById(R.id.testButton2)).setOnClickListener(new OnClickListener() {

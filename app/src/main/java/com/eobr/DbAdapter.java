@@ -33,6 +33,9 @@ public class DbAdapter extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_NOT_SENT = "CREATE TABLE IF NOT EXISTS notsent \n" +
             "(trip_id integer primary key not null)";
 
+    private static final String CREATE_TABLE_TRIP_ID = "CREATE TABLE IF NOT EXISTS trip_id \n" +
+            "(trip_id integer primary key not null)";
+
 
     /**
      *  Constructor
@@ -46,6 +49,7 @@ public class DbAdapter extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE_TRIPS);
         db.execSQL(CREATE_TABLE_NOT_SENT);
+        db.execSQL(CREATE_TABLE_TRIP_ID);
     }
 
     @Override

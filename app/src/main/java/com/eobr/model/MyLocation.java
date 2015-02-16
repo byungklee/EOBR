@@ -41,6 +41,7 @@ public class MyLocation {
             jsonTime.accumulate("month", time.month+1);
             jsonTime.accumulate("year", time.year);
             jsonTime.accumulate("time", time.format("%k:%M:%S").trim());
+            jsonTime.accumulate("timezone", time.timezone);
         } catch(JSONException e) {
             e.printStackTrace();
         }

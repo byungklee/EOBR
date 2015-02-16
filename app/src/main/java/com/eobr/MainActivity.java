@@ -86,7 +86,6 @@ public class MainActivity extends ActionBarActivity implements GPSListener, Call
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-
         //Get the Mac Address to use it as Unique ID
         WifiManager manager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         WifiInfo info = manager.getConnectionInfo();
@@ -511,6 +510,8 @@ public class MainActivity extends ActionBarActivity implements GPSListener, Call
             CURRENT_TRIP_ID = -1;
             state = ServiceState.READY;
             LocationList.getInstance().clear();
+
+            //Call resource manager after trip is done.
         }
     }
 
@@ -533,7 +534,6 @@ public class MainActivity extends ActionBarActivity implements GPSListener, Call
 //                entityBuilder.addTextBody(USER_ID, userId);
 //                entityBuilder.addTextBody(NAME, name);
 
-                //To add files. In the server side, it reads the files.
                 Iterator it = NoteList.getInstance().iterator();
                 String note = "note";
                 int i=1;
@@ -557,7 +557,6 @@ public class MainActivity extends ActionBarActivity implements GPSListener, Call
             }
             catch(Exception e)
             {
-
                 e.printStackTrace();
             }
 
@@ -568,6 +567,7 @@ public class MainActivity extends ActionBarActivity implements GPSListener, Call
         protected void onPostExecute(String result) {
             Log.i(TAG, "RESULT on soundfiles: " + result);
             NoteList.getInstance().clear();
+            rm.execute();
         }
     }
 

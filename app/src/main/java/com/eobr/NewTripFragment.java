@@ -105,13 +105,17 @@ public class NewTripFragment extends Fragment implements GPSListener {
                 if(MainActivity.CURRENT_TRIP_ID == -1) {
                     DbAdapter db = new DbAdapter(getActivity().getApplicationContext());
                     SQLiteDatabase sqlDb = db.getReadableDatabase();
-                    String query="select trip_id from trips order by trip_id desc";
+                    SQLiteDatabase writeDb = db.getWritableDatabase();
+                    String query="select trip_id from trip_id";
                     Cursor curs=sqlDb.rawQuery(query, null);
                     curs.moveToFirst();
                     if(curs.getCount() != 0) {
                         MainActivity.CURRENT_TRIP_ID = curs.getInt(0)+1;
-                    } else
+                        writeDb.execSQL("update trip_id set trip_id="+ MainActivity.CURRENT_TRIP_ID + " where trip_id=" +(MainActivity.CURRENT_TRIP_ID-1));
+                    } else {
                         MainActivity.CURRENT_TRIP_ID = 1;
+                        writeDb.execSQL("insert into trip_id (trip_id) values (1)");
+                    }
                     curs.close();
                 }
 

@@ -325,9 +325,12 @@ public class HttpPost {
 
     public void checkTripId(int trip_id) {
         if(container.containsKey(trip_id)) {
-            list.remove(new Integer(trip_id));
+//            list.remove(new Integer(trip_id));
             callback.callback();
             container.remove(trip_id);
+            DbAdapter db = new DbAdapter(ctx);
+            SQLiteDatabase writeDb = db.getWritableDatabase();
+            writeDb.execSQL("delete from notsent where trip_id=" + trip_id);
         } else {
             container.put(trip_id, true);
         }
