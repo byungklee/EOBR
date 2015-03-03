@@ -166,7 +166,6 @@ public class LoginFragment extends Fragment {
 
         sqlDb.execSQL("insert into trips (trip_id, time, trip_type,longitude, latitude, type, truck_id)" +
                 " values (888, \'" + ml.getJsonTime() + "\', \"start\", 1, 1, \"pick_up_empty\", \"64:89:9a:8f:22:91\")");
-
         cur = readDb.rawQuery("select * from trips",null);
         cur.moveToFirst();
         System.out.println(cur.getCount());

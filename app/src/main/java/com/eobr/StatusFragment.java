@@ -25,20 +25,19 @@ import com.eobr.model.MyLocation;
  */
 public class StatusFragment extends Fragment implements GPSListener {
 
+    //For Debuggif Purpose
     private final String TAG = "StatusFragment";
 
+    //Buttons
     private Button mNoteButton;
-    private Button mOriginWaitingAtTheGate;
-    private Button mOriginTerminalGateClosed;
-    private Button mOriginFillingOutPaperWork;
-
-    private Button mDestinWaitingAtTheGate;
-    private Button mDestinTerminalGateClosed;
-    private Button mDestinFillingOutPaperWork;
-
-    private Button mRoadTraffic;
-    private Button mRoadRefueling;
-    private Button mRoadEquipmentProblem;
+    private Button mGateIn;
+    private Button mWaitingForDock;
+    private Button mDockIn;
+    private Button mDockOut;
+    private Button mAvailable;
+    private Button mNotAvailable;
+    private Button mPickUp;
+    private Button mDeliver;
 
     private TextView mDetailStatusTextView;
     private GPSReceiver gpsReceiver;
@@ -56,7 +55,6 @@ public class StatusFragment extends Fragment implements GPSListener {
     public static StatusFragment newInstance(String param1, String param2) {
         StatusFragment fragment = new StatusFragment();
         Bundle args = new Bundle();
-
         fragment.setArguments(args);
         return fragment;
     }
@@ -69,134 +67,17 @@ public class StatusFragment extends Fragment implements GPSListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         locationList = LocationList.getInstance();
+        gpsReceiver = new GPSReceiver(this);
     }
 
     @Override
     public void onResume() {
         Log.e("DEBUG", "onResume of LoginFragment");
         super.onResume();
-        IntentFilter mStatusIntentFilter = new IntentFilter(
-                Constants.BROAD_CAST_LOCATION);
-        IntentFilter mLocationOnceFilter = new IntentFilter(Constants.BROAD_CAST_LOCATION_ONCE);
 
-        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(
-                gpsReceiver,
-                mStatusIntentFilter);
-        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(
-                gpsReceiver,
-                mLocationOnceFilter);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_status, container, false);
-
-        mNoteButton = (Button) v.findViewById(R.id.note);
-        mNoteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                ft.replace(R.id.container, new NoteFragment());
-                ft.addToBackStack("status");
-                ft.commit();
-            }
-        });
-        mDetailStatusTextView = (TextView) v.findViewById(R.id.scroll_view);
-        mDetailStatusTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                ft.replace(R.id.container, new DetailStatusFragment());
-                ft.addToBackStack("status");
-
-                ft.commit();
-            }
-        });
-        mOriginWaitingAtTheGate = (Button) v.findViewById(R.id.origin_waiting_at_the_gate);
-        mOriginWaitingAtTheGate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
-                i.putExtra("type", "origin_waiting_at_the_gate");
-                getActivity().startService(i);
-            }
-        });
-        mOriginTerminalGateClosed = (Button) v.findViewById(R.id.origin_terminal_gate_closed);
-        mOriginTerminalGateClosed.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
-                i.putExtra("type", "origin_terminal_gate_closed");
-                getActivity().startService(i);
-            }
-        });
-        mOriginFillingOutPaperWork = (Button) v.findViewById(R.id.origin_filling_out_paperwork);
-        mOriginFillingOutPaperWork.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
-                i.putExtra("type", "origin_filling_out_paperwork");
-                getActivity().startService(i);
-            }
-        });
-        mDestinWaitingAtTheGate = (Button) v.findViewById(R.id.destin_waiting_at_the_gate);
-        mDestinWaitingAtTheGate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
-                i.putExtra("type", "destin_waiting_at_the_gate");
-                getActivity().startService(i);
-            }
-        });
-        mDestinTerminalGateClosed = (Button) v.findViewById(R.id.destin_terminal_gate_closed);
-        mDestinTerminalGateClosed.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
-                i.putExtra("type", "destin_terminal_gate_closed");
-                getActivity().startService(i);
-            }
-        });
-        mDestinFillingOutPaperWork = (Button) v.findViewById(R.id.destin_filling_out_paperwork);
-        mDestinFillingOutPaperWork.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
-                i.putExtra("type", "destin_filling_out_paperwork");
-                getActivity().startService(i);
-            }
-        });
-        mRoadTraffic = (Button) v.findViewById(R.id.road_traffic);
-        mRoadTraffic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
-                i.putExtra("type", "road_traffic");
-                getActivity().startService(i);
-            }
-        });
-        mRoadRefueling = (Button) v.findViewById(R.id.road_refueling);
-        mRoadRefueling.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
-                i.putExtra("type", "road_refueling");
-                getActivity().startService(i);
-            }
-        });
-        mRoadEquipmentProblem = (Button) v.findViewById(R.id.road_equipment_problem);
-        mRoadEquipmentProblem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
-                i.putExtra("type", "road_equipment_problem");
-                getActivity().startService(i);
-            }
-        });
-
-
-
+        /**
+         * Attach GPS Receivers so that Status Fragment can listen and update.
+         */
         gpsReceiver = new GPSReceiver(this);
         IntentFilter mStatusIntentFilter = new IntentFilter(
                 Constants.BROAD_CAST_LOCATION);
@@ -208,13 +89,111 @@ public class StatusFragment extends Fragment implements GPSListener {
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(
                 gpsReceiver,
                 mLocationOnceFilter);
-
-
         if(!locationList.isEmpty())
             mDetailStatusTextView.setText(getListString());
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_status, container, false);
+
+        /**
+         * Note Button
+         */
+        mNoteButton = (Button) v.findViewById(R.id.note);
+        setOnClickListenerForOpeningFragment(mNoteButton,  NoteFragment.newInstance());
+
+        /**
+         * For Detail Status View
+         */
+        mDetailStatusTextView = (TextView) v.findViewById(R.id.scroll_view);
+        setOnClickListenerForOpeningFragment(mDetailStatusTextView, DetailStatusFragment.newInstance());
+
+        /**
+         * Terminal Buttons
+         */
+        mGateIn = (Button) v.findViewById(R.id.gate_in);
+        setOnClickListenerForGPS(mGateIn);
+
+        /**
+         * Warehouse Buttons
+         */
+        mWaitingForDock = (Button) v.findViewById(R.id.waiting_for_dock);
+        setOnClickListenerForGPS(mWaitingForDock);
+        mDockIn = (Button) v.findViewById(R.id.dock_in);
+        setOnClickListenerForGPS(mDockIn);
+        mDockOut = (Button) v.findViewById(R.id.dock_out);
+        setOnClickListenerForGPS(mDockOut);
+
+        /**
+         * Container Status Buttons
+         */
+        mAvailable = (Button) v.findViewById(R.id.available);
+        setOnClickListenerForGPS(mAvailable);
+
+        mNotAvailable = (Button) v.findViewById(R.id.not_available);
+        setOnClickListenerForGPS(mNotAvailable);
+
+        mPickUp = (Button) v.findViewById(R.id.pickup);
+        setOnClickListenerForGPS(mPickUp);
+
+        mDeliver = (Button) v.findViewById(R.id.deliver);
+        setOnClickListenerForGPS(mDeliver);
+
+//        IntentFilter mStatusIntentFilter = new IntentFilter(
+//                Constants.BROAD_CAST_LOCATION);
+//        IntentFilter mLocationOnceFilter = new IntentFilter(Constants.BROAD_CAST_LOCATION_ONCE);
+//
+//        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(
+//                gpsReceiver,
+//                mStatusIntentFilter);
+//        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(
+//                gpsReceiver,
+//                mLocationOnceFilter);
+
+
+//        if(!locationList.isEmpty())
+//            mDetailStatusTextView.setText(getListString());
 
         return v;
     }
+
+    private void openNewFragment(Fragment f) {
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.replace(R.id.container, f);
+        ft.addToBackStack("status");
+        ft.commit();
+    }
+
+    private void setOnClickListenerForOpeningFragment(View b, final Fragment f) {
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openNewFragment(f);
+            }
+        });
+    }
+
+    private void setOnClickListenerForGPS(final View b) {
+        b.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                getDataFromGps(b);
+            }
+        });
+    }
+
+    private void getDataFromGps(View b) {
+        Intent i = new Intent(getActivity().getApplicationContext(), GPSIntentService.class);
+        i.putExtra("type", extractTextFromButton((Button) b));
+        getActivity().startService(i);
+    }
+
+    private String extractTextFromButton(Button b) {
+        return b.getText().toString().toLowerCase().replaceAll(" ","_");
+    }
+
     public String getListString() {
         StringBuilder sb = new StringBuilder();
         int size = locationList.size();
@@ -244,6 +223,9 @@ public class StatusFragment extends Fragment implements GPSListener {
     @Override
     public void onStop() {
         super.onStop();
+        /**
+         * Detach gps receiver if this fragment is onStop.
+         */
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(gpsReceiver);
     }
 }

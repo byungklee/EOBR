@@ -95,6 +95,8 @@ public class NewTripFragment extends Fragment implements GPSListener {
                 mGpsReceiver,
                 mStatusIntentFilter);
 
+        ((Button)v.findViewById(R.id.reset_button)).setVisibility(Button.INVISIBLE);
+
         mStartButton = (Button) v.findViewById(R.id.start_button);
         		mStartButton.setOnClickListener(new View.OnClickListener() {
 

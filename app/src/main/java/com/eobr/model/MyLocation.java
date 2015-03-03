@@ -33,7 +33,7 @@ public class MyLocation {
         this.setLatitude(latitude);
         this.setLongitude(longitude);
         time = new Time();
-        time.setToNow();
+        this.setTime();
         note = "";
         jsonTime = new JSONObject();
         try {
@@ -45,9 +45,6 @@ public class MyLocation {
         } catch(JSONException e) {
             e.printStackTrace();
         }
-        //JSONObject("{df");
-
-
     }
 
     /**

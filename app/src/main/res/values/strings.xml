@@ -16,23 +16,39 @@
     <!-- New Trip -->
     <string name="origin">Origin</string>
     <string name="destination">Destination</string>
-    <string name="trip_type">Trip Type</string>
+
     <string name="start">Start</string>
     <string name="reset">Reset</string>
     <string name="back">Back</string>
+
+    <string name="trip_type">Trip Type</string>
     <string name="pickup_empty">Pickup Empty</string>
     <string name="pickup_full">Pickup Full</string>
     <string name="deliver_empty">Deliver Empty</string>
     <string name="deliver_full">Deliver Full</string>
+
+    <!-- Status -->
     <string name="status">Status</string>
-    <string name="road">Road</string>
-    <string name="note">Note</string>
-    <string name="od_1">Waiting at the gate</string>
-    <string name="od_2">Terminal gate closed</string>
+
+    <string name="note">Record Note</string>
+    <!--<string name="o">Waiting at the gate</string>-->
+    <!--<string name="od_2">Terminal gate closed</string>-->
     <string name="od_3">Filling out paperwork</string>
-    <string name="road_1">Traffic</string>
-    <string name="road_2">Refueling</string>
-    <string name="road_3">Equipment Problem</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="terminal">Terminal</string>
+    <string name="gate_in">Gate In</string>
+    <string name="hook_unhook">Hook/Unhook</string>
+    <string name="gate_out">Gate Out</string>
+
+    <string name="warehouse">Warehouse</string>
+    <string name="waiting_for_dock">Waiting For Dock</string>
+    <string name="dock_in">Dock In</string>
+    <string name="dock_out">Dock Out</string>
+
+    <string name="container_status">Container Status</string>
+    <string name="not_available">Not Available</string>
+    <string name="available">Available</string>
+    <string name="pickup">Pick Up</string>
+    <string name="deliver">Deliver</string>
 
 </resources>
