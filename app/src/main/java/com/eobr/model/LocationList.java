@@ -1,6 +1,7 @@
 package com.eobr.model;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Created by byung on 12/18/14.
@@ -40,6 +41,10 @@ public class LocationList {
 
     public boolean isEmpty() {
         return mLocationList.isEmpty();
+    }
+
+    public Iterator<MyLocation> iterator() {
+        return mLocationList.iterator();
     }
 
     public ArrayList<MyLocation> getList() {

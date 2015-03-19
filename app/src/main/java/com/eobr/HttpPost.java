@@ -6,6 +6,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.eobr.model.MyLocation;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -37,31 +39,35 @@ import java.util.Map;
  */
 public class HttpPost {
     private static final String TAG = "HTTPPOST";
-    private Context ctx;
-    private Callback callback;
-//    private static final String serverIpAndPort = "http://192.168.0.23:8888";
-//private static final String serverIpAndPort = "http://134.139.249.76:8888";
-//    private static final String serverIp = "http://134.139.249.76";
-//    private static final String serverIp="http://192.168.0.23";
- //   private static final int port = 8888;
-    private List list;
+
+
     private Map container;
 
-    public HttpPost(Context ctx) { this.ctx= ctx; }
-    public HttpPost(Context ctx, List list, Callback callback) {
-        this.ctx= ctx;
-        this.list = list;
-        this.callback = callback;
-        container = new HashMap();
+    //public HttpPost(Context ctx) { this.ctx= ctx; }
+    public HttpPost() { container = new HashMap();}
+//    public HttpPost(Context ctx, List list, Callback callback) {
+//        this.ctx= ctx;
+//        this.callback = callback;
+//        container = new HashMap();
+//    }
+
+    public void isServerAvailable(Callback callback) {
+        new CheckServerStatusAsyncTask(callback).execute();
     }
 
     public void resend(final int trip_id) {
          Log.i(TAG,"Resending trip_id " + trip_id);
-        new HttpAsyncCheckServerStatus(new Callback() {
+        new CheckServerStatusAsyncTask(new Callback() {
+
             @Override
-            public void callback() {
+            public void callbackOnSuccess() {
                 new HttpAsyncTask(trip_id).execute();
                 new HttpPostMultiEntityAsyncTask(trip_id).execute();
+            }
+
+            @Override
+            public void callbackOnFail() {
+                System.out.println("Server does not work!");
             }
         }).execute();
     }
@@ -69,7 +75,7 @@ public class HttpPost {
     public JSONObject createJSON(int trip_id) {
 
         // Load database
-        DbAdapter db = new DbAdapter(ctx);
+        DbAdapter db = new DbAdapter(MainActivity.mContext);
         SQLiteDatabase sqlDb = db.getReadableDatabase();
         Cursor cursor = sqlDb.rawQuery("select * from trips where trip_id=" + trip_id + " order by id", null);
 
@@ -110,8 +116,17 @@ public class HttpPost {
         return jsonObject;
     }
 
-    //Post Json
-    public String POST(String url, JSONObject jsonObj){
+    /**
+     * Post Json
+     * @param url
+     * @param jsonObj
+     * @return
+     */
+    private String POST(String url, JSONObject jsonObj){
+        if(jsonObj == null) {
+            return null;
+        }
+        System.out.println("HERE!!! in httppost: " + jsonObj.toString());
         InputStream inputStream = null;
         String result = "";
         try {
@@ -166,48 +181,31 @@ public class HttpPost {
     }
 
     //To check server status
-    public class HttpAsyncCheckServerStatus extends AsyncTask<Void,Void,Void> {
+    public class CheckServerStatusAsyncTask extends AsyncTask<Void,Void,Void> {
 
         Callback callback;
-        public HttpAsyncCheckServerStatus(Callback callback) {
+        public CheckServerStatusAsyncTask(Callback callback) {
             this.callback = callback;
         }
 
         @Override
         protected Void doInBackground(Void... params) {
             try {
+                System.out.println("checking server status...");
                 URL url = new URL(MainActivity.serverIp + ":" + MainActivity.port);
                 HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
                 urlConn.setConnectTimeout(3000);
+
                 urlConn.connect();
                 urlConn.disconnect();
-                this.callback.callback();
+                this.callback.callbackOnSuccess();
             } catch(MalformedURLException e) {
-                System.err.println("Error creating HTTP connection");
-               // toInitialStateWithSavingData();
+                System.err.println("Malformed URL Error creating HTTP connection");
+                this.callback.callbackOnFail();
             } catch(IOException e) {
-                System.err.println("Error creating HTTP connection");
-             //   toInitialStateWithSavingData();
+                System.err.println("IO EXCEPTION Error creating HTTP connection");
+                this.callback.callbackOnFail();
             }
-//            try{
-//                Socket s = new Socket(serverIp, port);
-//                if(s.isConnected()) {
-//                    s.close();
-//                    this.callback.callback();
-//                }
-//
-//                Log.i(TAG, "Server work");
-//            } catch (UnknownHostException e)
-//            { // unknown host
-//                Log.i(TAG, "Server work no");
-//            }
-//            catch (IOException e) { // io exception, service probably not running
-//                Log.i(TAG, "Server work no ");
-//            }
-//            catch (NullPointerException e) {
-//                Log.i(TAG, "Server work no");
-//
-//            }
             return null;
         }
     }
@@ -254,7 +252,7 @@ public class HttpPost {
         private List fileNames;
         public HttpPostMultiEntityAsyncTask(int trip_id) {
             this.trip_id = trip_id;
-            DbAdapter db = new DbAdapter(ctx);
+            DbAdapter db = new DbAdapter(MainActivity.mContext);
             SQLiteDatabase sqlDb = db.getReadableDatabase();
             fileNames = new ArrayList();
             Cursor cur = sqlDb.rawQuery("select * from trips where trip_id=\"" + trip_id + "\" and type=\"note\"", null);
@@ -264,7 +262,6 @@ public class HttpPost {
                     fileNames.add(cur.getString(cur.getColumnIndex("note")));
                 } while (cur.moveToNext());
             }
-
         }
 
         @Override
@@ -326,13 +323,156 @@ public class HttpPost {
     public void checkTripId(int trip_id) {
         if(container.containsKey(trip_id)) {
 //            list.remove(new Integer(trip_id));
-            callback.callback();
+//            callback.callbackOnSuccess();
             container.remove(trip_id);
-            DbAdapter db = new DbAdapter(ctx);
+            DbAdapter db = new DbAdapter(MainActivity.mContext);
             SQLiteDatabase writeDb = db.getWritableDatabase();
-            writeDb.execSQL("delete from notsent where trip_id=" + trip_id);
+            //writeDb.execSQL("delete from notsent where trip_id=" + trip_id);
+            writeDb.execSQL("delete from trips where trip_id=" + trip_id);
         } else {
             container.put(trip_id, true);
         }
     }
+
+
+    /**
+     * 1. Check server is open
+     * 2. if open, create json and send to a server.
+     * 3. else save it to a database
+     * @param l
+     */
+    public void sendJson(final MyLocation l) {
+        new CheckServerStatusAsyncTask(new Callback() {
+            @Override
+            public void callbackOnSuccess() {
+                new PostJsonAsyncTask(createJson(l)).execute();
+//                new HttpPostMultiEntityAsyncTask(trip_id).execute();
+            }
+            public void callbackOnFail() {
+                saveLocationToDatabase(l);
+            }
+        }).execute();
+    }
+
+    public void sendFiles(final MyLocation l) {
+        new CheckServerStatusAsyncTask(new Callback() {
+            @Override
+            public void callbackOnSuccess() {
+                new PostJsonAsyncTask(createJson(l)).execute();
+                new PostFilesAsyncTask(createJson(l)).execute();
+            }
+            public void callbackOnFail() {
+                saveLocationToDatabase(l);
+            }
+
+        }).execute();
+    }
+
+    public void saveLocationToDatabase(MyLocation location) {
+
+        DbAdapter db = new DbAdapter(MainActivity.mContext);
+        SQLiteDatabase sqlDb = db.getWritableDatabase();
+        sqlDb.execSQL("insert into trips (id, trip_id, truck_id, trip_type, type, latitude, longitude, time) " +
+                "values (" + location.getId() + ", " + location.getTrip_id() + ", \"" +MainActivity.TRUCK_ID + "\", \"" + location.getTrip_type() + "\", \"" + location.getType() + "\", " +
+                location.getLatitude() + ", " + location.getLongitude() + ", \'" + location.getJsonTime() + "\')");
+        sqlDb.close();
+        db.close();
+        System.out.println("Saving completed " + location.toString());
+
+    }
+
+    public JSONObject createJson(MyLocation l) {
+        JSONObject jsonObject = new JSONObject();
+
+            JSONObject tempJson = new JSONObject();
+        try {
+            tempJson.put("id", l.getId()); // id
+            tempJson.put("trip_id", l.getTrip_id()); // trip_id
+            tempJson.put("truck_id", MainActivity.TRUCK_ID); //truck_id
+            tempJson.put("trip_type", l.getTrip_type()); // trip_type
+            tempJson.put("type", l.getType()); //type
+            tempJson.put("latitude", l.getLatitude()); //latitude
+            tempJson.put("longitude", l.getLongitude()); // longtitude
+            tempJson.put("time", l.getJsonTime()); // time
+            tempJson.put("note", l.getNote()); // note
+            jsonObject.accumulate("record", tempJson);
+        } catch(JSONException j) {
+            System.err.println("ERRoR IN json");
+        }
+
+        Log.i(TAG, jsonObject.toString());
+        return jsonObject;
+    }
+
+
+    private class PostJsonAsyncTask extends AsyncTask<String, Void, String> {
+
+        final private JSONObject json;
+        public PostJsonAsyncTask(JSONObject j) {
+            this.json = j;
+        }
+        @Override
+        protected String doInBackground(String... urls) {
+            return POST(MainActivity.serverIpAndPort+"/add", json);
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            Log.i(TAG, "RESULT on Json: " + result);
+
+            if(result != null || result.equals("Success!")) {
+
+//                Log.i(TAG, "removing from unsentList");
+//                checkTripId(trip_id);
+
+
+            }
+        }
+    }
+
+    private class PostFilesAsyncTask extends AsyncTask<String, Void, String> {
+//        private int trip_id;
+        private JSONObject json;
+//        private List fileNames;
+        public PostFilesAsyncTask(JSONObject o) {
+              json = o;
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String result="";
+            try
+            {
+                HttpClient client = new DefaultHttpClient();
+                org.apache.http.client.methods.HttpPost post = new org.apache.http.client.methods.HttpPost(MainActivity.serverIpAndPort+"/uploadfile");
+                post.setHeader("enctype", "multipart/form-data");
+                MultipartEntityBuilder entityBuilder = MultipartEntityBuilder.create();
+                entityBuilder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+
+                String note = "note";
+                FileBody filebody = new FileBody(new File(json.getString("note")));
+                entityBuilder.addPart(note +json.getString("id"),filebody);
+
+                HttpEntity entity = entityBuilder.build();
+
+                post.setEntity(entity);
+
+                HttpResponse response = client.execute(post);
+
+                HttpEntity httpEntity = response.getEntity();
+
+
+                result = EntityUtils.toString(httpEntity);
+
+                Log.v("result", result);
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+
+            return result;
+        }
+    }
+
 }

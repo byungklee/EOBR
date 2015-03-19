@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eobr.model.MyLocation;
+import com.eobr.resource.ResourceManager;
 
 import java.io.File;
 
@@ -58,7 +59,7 @@ public class LoginFragment extends Fragment {
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 if(MainActivity.state == MainActivity.ServiceState.READY) {
-                    NewTripFragment fragment2 = new NewTripFragment();
+                    NewTripFragment fragment2 = NewTripFragment.newInstance();
 
                     //What is happening with transaction.replace is that
                     //remove(fragment1).add(fragment2)
@@ -95,7 +96,7 @@ public class LoginFragment extends Fragment {
         /**
          * Debug Purpose
          */
-        ((Button) rootView.findViewById(R.id.testButton)).setVisibility(Button.INVISIBLE);
+       ((Button) rootView.findViewById(R.id.testButton)).setVisibility(Button.INVISIBLE);
         ((Button) rootView.findViewById(R.id.testButton2)).setVisibility(Button.INVISIBLE);
         ((Button) rootView.findViewById(R.id.testButton3)).setVisibility(Button.INVISIBLE);
         ((Button) rootView.findViewById(R.id.testButton)).setOnClickListener(new OnClickListener() {
@@ -107,17 +108,28 @@ public class LoginFragment extends Fragment {
 
                 //Create a test case:
                 //MainActivity.rm.execute();
-
-                //Clear all
                 DbAdapter db = new DbAdapter(getActivity().getApplicationContext());
-                SQLiteDatabase dbs = db.getWritableDatabase();
-                dbs.execSQL("delete from notsent where trip_id > 0");
-                File[] files = getActivity().getApplicationContext().getFilesDir().listFiles();
-                //System.out.println("Cleaning File\n number of files is " + files.length);
-                for(File f: files) {
-                    f.delete();
+                SQLiteDatabase sqlDb = db.getReadableDatabase();
+                SQLiteDatabase writeDb = db.getWritableDatabase();
+                String query="select trip_id from trip_id";
+                Cursor curs=sqlDb.rawQuery(query, null);
+                curs.moveToFirst();
+                if(curs.getCount() != 0) {
+                    MainActivity.CURRENT_TRIP_ID = curs.getInt(0)+1;
+                    writeDb.execSQL("update trip_id set trip_id="+ 70 + " where trip_id=" +(MainActivity.CURRENT_TRIP_ID-1));
                 }
-                System.out.println("Cleaned ALL");
+
+                //testcase1();
+                //Clear all
+//                DbAdapter db = new DbAdapter(getActivity().getApplicationContext());
+//                SQLiteDatabase dbs = db.getWritableDatabase();
+//                dbs.execSQL("delete from notsent where trip_id > 0");
+//                File[] files = getActivity().getApplicationContext().getFilesDir().listFiles();
+//                //System.out.println("Cleaning File\n number of files is " + files.length);
+//                for(File f: files) {
+//                    f.delete();
+//                }
+//                System.out.println("Cleaned ALL");
 
             }
         });
@@ -128,22 +140,50 @@ public class LoginFragment extends Fragment {
                 //ResourceManager rm = new ResourceManager(getActivity().getApplicationContext());
                 //rm.printFiles();
                 //Create a test case:
-                testcaseForResourceManager();
+               // testcaseForResourceManager();
+                testcase2();
             }
         });
         ((Button) rootView.findViewById(R.id.testButton3)).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 System.out.println("Test3 Button has pressed " + MainActivity.state);
-                //ResourceManager rm = new ResourceManager(getActivity().getApplicationContext());
-                //rm.printFiles();
+                ResourceManager rm = new ResourceManager(getActivity().getApplicationContext());
+                rm.printFiles();
                 //Create a test case:
-                testcaseTest();
+                //testcaseTest();
+
             }
         });
 
 		return rootView;
 	}
+
+    public void testcase1() {
+        //Select * from trips;
+        DbAdapter db = new DbAdapter(getActivity().getApplicationContext());
+        SQLiteDatabase sqlDb = db.getReadableDatabase();
+        Cursor cur  = sqlDb.rawQuery("select * from trips", null);
+        Log.i("Login", "" + cur.getCount());
+
+//        cur  = sqlDb.rawQuery("select * from notsent", null);
+//        Log.i("Login", "" + cur.getCount());
+        db.close();
+        sqlDb.close();
+    }
+
+    public void testcase2() {
+        DbAdapter db = new DbAdapter(getActivity().getApplicationContext());
+        SQLiteDatabase sqlDb = db.getReadableDatabase();
+        Cursor cur  = sqlDb.rawQuery("select distinct trip_id from trips", null);
+        Log.i("Login", "" + cur.getCount());
+
+//        cur  = sqlDb.rawQuery("select * from notsent", null);
+//        Log.i("Login", "" + cur.getCount());
+        db.close();
+        sqlDb.close();
+        //select distinct trip_id from trips
+    }
 
     public void testcaseTest() {
         DbAdapter db = new DbAdapter(getActivity().getApplicationContext());

@@ -23,7 +23,7 @@ public class NoteList {
     public void add(String filename) {
         notelist.add(filename);
     }
-    public ArrayList<String> getList() { return notelist; }
+//    public ArrayList<String> getList() { return notelist; }
     public Iterator iterator() {
         return notelist.iterator();
     }

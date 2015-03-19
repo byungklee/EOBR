@@ -6,7 +6,7 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.3"
+        android:layout_weight="0.26"
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
         android:orientation="vertical">
@@ -16,13 +16,14 @@
             android:layout_weight="0.2"
             android:text="@string/status"
             android:id="@+id/status_text_view"
-            android:textSize="36sp"
+            android:textSize="22sp"
             />
         <TextView
             android:id="@+id/scroll_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.8"
+            android:layout_marginTop="2dp"
             android:layout_below="@+id/status_text_view"
             android:background="@drawable/stroke_bg" >
         </TextView>
@@ -31,8 +32,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.5"
-        android:layout_marginTop="24dp"
+        android:layout_weight="0.9"
+        android:layout_marginTop="16dp"
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
         android:orientation="horizontal">
@@ -59,6 +60,13 @@
                 android:textSize="24sp"
                 android:text="@string/gate_in"
                 android:id="@+id/gate_in"/>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="85dp"
+                android:textSize="24sp"
+                android:layout_marginTop="16dp"
+                android:text="@string/hook_unhook"
+                android:id="@+id/hook_unhook"/>
             <!--<Button-->
                 <!--android:layout_width="match_parent"-->
                 <!--android:layout_height="85dp"-->
@@ -103,14 +111,14 @@
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="85dp"
-                android:layout_marginTop="18dp"
+                android:layout_marginTop="16dp"
                 android:textSize="24sp"
                 android:text="@string/dock_in"
                 android:id="@+id/dock_in"/>
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="85dp"
-                android:layout_marginTop="18dp"
+                android:layout_marginTop="16dp"
                 android:textSize="24sp"
                 android:text="@string/dock_out"
                 android:id="@+id/dock_out"/>
@@ -141,21 +149,21 @@
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="85dp"
-                android:layout_marginTop="18dp"
+                android:layout_marginTop="16dp"
                 android:textSize="24sp"
                 android:text="@string/not_available"
                 android:id="@+id/not_available"/>
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="85dp"
-                android:layout_marginTop="18dp"
+                android:layout_marginTop="16dp"
                 android:textSize="24sp"
                 android:text="@string/pickup"
                 android:id="@+id/pickup"/>
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="85dp"
-                android:layout_marginTop="18dp"
+                android:layout_marginTop="16dp"
                 android:textSize="24sp"
                 android:text="@string/deliver"
                 android:id="@+id/deliver"/>

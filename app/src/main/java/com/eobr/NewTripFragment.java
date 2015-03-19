@@ -157,8 +157,6 @@ public class NewTripFragment extends Fragment implements GPSListener {
         return v;
     }
 
-
-
     @Override
     public void execute(){}
 

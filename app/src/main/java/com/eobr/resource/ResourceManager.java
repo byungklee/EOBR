@@ -16,7 +16,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
+
 import java.util.List;
 
 /**
@@ -71,129 +71,126 @@ public class ResourceManager implements Callback {
     }
 
     public void clean() {
-        checkUnsent();
+        //checkUnsent();
         tryResendUnsentData();
+        cleanFiles();
     }
 
     private void tryResendUnsentData() {
         //if(unSentIdList.)
-        Iterator it = unSentIdList.iterator();
-        HttpPost hp = new HttpPost(ctx, unSentIdList, this);
-        while(it.hasNext()) {
-            int trip_id = (Integer) it.next();
-            hp.resend(trip_id);
-        }
-    }
+//        Iterator it = unSentIdList.iterator();
+//        HttpPost hp = new HttpPost(ctx, unSentIdList, this);
+//        while(it.hasNext()) {
+//            int trip_id = (Integer) it.next();
+//            hp.resend(trip_id);
+//        }
+        System.out.println("Trying resend unsentData!");
 
-    public void checkUnsent() {
+        final HttpPost post = new HttpPost();
+        post.isServerAvailable(new Callback() {
 
-        DbAdapter db = new DbAdapter(ctx);
-        SQLiteDatabase sqlDB = db.getReadableDatabase();
-        Cursor cur = sqlDB.rawQuery("select * from notsent", null);
-        if(cur.getCount() != 0) {
-            cur.moveToFirst();
-            do {
-                if(!unSentIdList.contains(cur.getInt(0)))
-                    unSentIdList.add(cur.getInt(0));
-            } while(cur.moveToNext());
-        }
-        db.close();
-        sqlDB.close();
-        Log.i(TAG, "checking unsent data " + unSentIdList.size());
+            @Override
+            public void callbackOnSuccess() {
+                DbAdapter db = new DbAdapter(ctx);
+                SQLiteDatabase sqlDB = db.getReadableDatabase();
+                System.out.println("Querying unsent data since server is working!");
+                Cursor cur = sqlDB.rawQuery("select distinct trip_id from trips", null);
+
+                if(cur.getCount() != 0) {
+                    cur.moveToFirst();
+                    do {
+                        System.out.println("Trying resend!");
+                        unSentIdList.add(cur.getInt(0));
+                        post.resend(cur.getInt(0));
+
+                        System.out.println(cur.getInt(0));
+                    } while(cur.moveToNext());
+                }
+                db.close();
+                sqlDB.close();
+            }
+
+            @Override
+            public void callbackOnFail() {
+                Log.i(TAG,"Server not available to send unsent data");
+            }
+        });
+
     }
+//
+//    public void checkUnsent() {
+//
+//        DbAdapter db = new DbAdapter(ctx);
+//        SQLiteDatabase sqlDB = db.getReadableDatabase();
+//        Cursor cur = sqlDB.rawQuery("select * from ", null);
+//        if(cur.getCount() != 0) {
+//            cur.moveToFirst();
+//            do {
+//                if(!unSentIdList.contains(cur.getInt(0)))
+//                    unSentIdList.add(cur.getInt(0));
+//            } while(cur.moveToNext());
+//        }
+//        db.close();
+//        sqlDB.close();
+//        Log.i(TAG, "checking unsent data " + unSentIdList.size());
+//    }
 
     private int dateToInt(int year, int month, int day) {
         return year*12*30 + month*30 + day;
     }
 
-    private void cleanFiles() {
+    public void cleanFiles() {
         DbAdapter db = new DbAdapter(ctx);
-        SQLiteDatabase writeDb = db.getWritableDatabase();
+        SQLiteDatabase readDb = db.getReadableDatabase();
         File[] files = ctx.getFilesDir().listFiles();
         System.out.println("Cleaning File\n number of files is " + files.length);
         for(File f: files) {
-            String[] temp = f.getName().split("_");
+       //     String[] temp = f.getName().split("_");
             System.out.println(f.getName() + " " + f.lastModified());
+            Cursor cur = readDb.rawQuery("select * from trips where note=\""+f.getName()+"\"",null);
+            if(cur.getCount() == 0) {
+                f.delete();
+            }
             // temp[1] is a trip_id;
             //check if trip_id is contained or not
-            if(!unSentIdList.contains(new Integer(temp[1]))) {
-                //clean
-                Log.d(TAG, "Times " + System.currentTimeMillis() + " " + f.lastModified());
-                long timeDiff = (System.currentTimeMillis()-f.lastModified())/1000/60/60/24;
-                Log.d(TAG,"Time Diff: " + timeDiff);
-                //Files over 3days are removed;
-                if(timeDiff > 3) {
-                    f.delete();
-                }
-            }
+//            if(!unSentIdList.contains(new Integer(temp[1]))) {
+//                //clean
+//                Log.d(TAG, "Times " + System.currentTimeMillis() + " " + f.lastModified());
+//                long timeDiff = (System.currentTimeMillis()-f.lastModified())/1000/60/60/24;
+//                Log.d(TAG,"Time Diff: " + timeDiff);
+//                //Files over 3days are removed;
+//                f.delete();
+////                if(timeDiff > 3) {
+////
+////                }
+//            }
         }
         db.close();
-        writeDb.close();
+        readDb.close();
     }
 
     public void execute() {
+
         new InternalStorageCleaner().execute();
+       Log.d(TAG,"EXECUTING RESOURCE MANAGER");
     }
 
-    private void cleanDatabase() {
-        DbAdapter db = new DbAdapter(ctx);
-        SQLiteDatabase writeDb = db.getWritableDatabase();
-        SQLiteDatabase sqlDb = db.getReadableDatabase();
 
+//
+//    @Override
+//    public void callback() {
+//
+//    }
 
-        System.out.println("Size of unsentList: " + unSentIdList.size());
-
-        Cursor cur = sqlDb.rawQuery("select * from trips where trip_type='start'", null);
-        System.out.println("Query Size : " + cur.getCount());
-        if (cur.getCount() != 0) {
-            cur.moveToFirst();
-            do {
-                int trip_id = cur.getInt(1);
-                System.out.println("Current Trip id to Care to clean: " + trip_id + " " + unSentIdList.contains(new Integer(trip_id)));
-
-                if (!unSentIdList.contains(new Integer(trip_id))) {
-                    System.out.println("Cursor count " + cur.getCount() + " " +
-                                    cur.getColumnIndex("time") + " "
-                    );
-                    try {
-                        JSONObject obj = new JSONObject(cur.getString(7));
-                        System.out.println("JSON Test " + obj.toString() + " " + obj.getInt("month"));
-
-                        int year = obj.getInt("year");
-                        int month = obj.getInt("month");
-                        int day = obj.getInt("day");
-                        Time time = new Time();
-                        time.setToNow();
-
-                        // (time.month+1)*30 + time.monthDay
-                        System.out.println("Data Date: " +  dateToInt(year,month,day) + " " +
-                                "Curret Date: " + dateToInt(time.year, time.month+1, time.monthDay));
-
-                        //Data over 3days are removed;
-                        if (dateToInt(time.year, time.month + 1, time.monthDay) -
-                                dateToInt(year, month, day) >= 3) {
-                            writeDb.execSQL("delete from trips where trip_id=\"" + trip_id + "\"");
-
-                            //if trip_id is not sent, then skip;
-                        }
-                    } catch (JSONException e) {
-                        Log.i("ResourceManager", e.getMessage());
-                    }
-                } else {
-                    System.out.println(trip_id + " is still unsent");
-                }
-            } while (cur.moveToNext());
-        }
-        db.close();
-        sqlDb.close();
-        writeDb.close();
+    @Override
+    public void callbackOnSuccess() {
+        cleanFiles();
+        unSentIdList.clear();
     }
 
     @Override
-    public void callback() {
-        cleanDatabase();
-        cleanFiles();
-        unSentIdList.clear();
+    public void callbackOnFail() {
+
     }
 
     private class InternalStorageCleaner extends AsyncTask<Void,Void,Void>

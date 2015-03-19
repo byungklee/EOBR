@@ -15,7 +15,10 @@ public class MyLocation {
     /**
      * Fields
      */
+    private int trip_id;
+    private int id;
     private String type;
+    private String trip_type;
     private String note;
     private double latitude;
     private double longitude;
@@ -98,5 +101,29 @@ public class MyLocation {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getTrip_id() {
+        return trip_id;
+    }
+
+    public void setTrip_id(int trip_id) {
+        this.trip_id = trip_id;
+    }
+
+    public String getTrip_type() {
+        return trip_type;
+    }
+
+    public void setTrip_type(String trip_type) {
+        this.trip_type = trip_type;
     }
 }

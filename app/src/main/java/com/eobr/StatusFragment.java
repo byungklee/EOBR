@@ -1,7 +1,5 @@
 package com.eobr;
 
-
-
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -31,6 +29,7 @@ public class StatusFragment extends Fragment implements GPSListener {
     //Buttons
     private Button mNoteButton;
     private Button mGateIn;
+    private Button mHookUnhook;
     private Button mWaitingForDock;
     private Button mDockIn;
     private Button mDockOut;
@@ -115,6 +114,8 @@ public class StatusFragment extends Fragment implements GPSListener {
          */
         mGateIn = (Button) v.findViewById(R.id.gate_in);
         setOnClickListenerForGPS(mGateIn);
+        mHookUnhook = (Button) v.findViewById(R.id.hook_unhook);
+        setOnClickListenerForGPS(mHookUnhook);
 
         /**
          * Warehouse Buttons
@@ -179,6 +180,8 @@ public class StatusFragment extends Fragment implements GPSListener {
         b.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                //System.out.println("Clicked");
+                Log.d(TAG, "Clicked Button");
                 getDataFromGps(b);
             }
         });
@@ -197,8 +200,8 @@ public class StatusFragment extends Fragment implements GPSListener {
     public String getListString() {
         StringBuilder sb = new StringBuilder();
         int size = locationList.size();
-        if(size > 10) {
-            for(int i=size - 10;i<size;i++) {
+        if(size > 6) {
+            for(int i=size - 6;i<size;i++) {
                 MyLocation ml = locationList.get(i);
                 sb.append(ml.getType() + "  ").append(ml.getLatitude()).append("  ").append(ml.getLongitude()).append("  ").append(ml.getTimeString()).append("\n");
             }

@@ -1,9 +1,8 @@
 package com.eobr;
 
 import android.app.Service;
-import android.content.Intent;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -33,10 +32,12 @@ public class GPSIntentService extends Service implements LocationListener {
 
     @Override
     public IBinder onBind(Intent intent) {
+
         return null;
     }
 
     public void onStart(Intent intent, int startId) {
+
         super.onStart(intent, startId);
         if(intent.getStringExtra("type") == null)
             type = null;
@@ -44,8 +45,8 @@ public class GPSIntentService extends Service implements LocationListener {
             type = intent.getStringExtra("type");
         note = intent.getStringExtra("note");
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        //requestionLocationUpdates(Provider, Min_Time in millisecond, Min_Distance in meter, listener)
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        System.out.println("GPS intent service up for " + type);
     }
 
     @Override
@@ -55,12 +56,26 @@ public class GPSIntentService extends Service implements LocationListener {
         MyLocation myLocation = new MyLocation(type,
                 location.getLatitude(),
                 location.getLongitude());
-        if(note != null) {
-            myLocation.setNote(note);
+
+        HttpPost post= new HttpPost();
+        myLocation.setId(MainActivity.id++);
+        myLocation.setTrip_id(MainActivity.CURRENT_TRIP_ID);
+        myLocation.setTrip_type(MainActivity.tripType);
+        if(type != null) {
+            System.out.println("Sending intent gps data");
+            if (note != null) {
+                myLocation.setNote(note);
+                post.sendFiles(myLocation);
+            } else {
+                post.sendJson(myLocation);
+            }
+            LocationList.getInstance().add(myLocation);
         }
 
-        if(type != null)
-            saveData(myLocation);
+
+
+//        if(type != null)
+//            saveData(myLocation);
 
         Intent localIntent= new Intent(Constants.BROAD_CAST_LOCATION_ONCE);
 
@@ -76,21 +91,21 @@ public class GPSIntentService extends Service implements LocationListener {
         this.stopSelf();
     }
 
-    private void saveData(MyLocation location) {
-        LocationList locationList = LocationList.getInstance();
-        locationList.add(location);
-        DbAdapter db = new DbAdapter(getApplicationContext());
-        SQLiteDatabase sqlDb = db.getWritableDatabase();
-        Log.i(TAG, "Checking time string " + location.getTimeString());
-        sqlDb.execSQL("insert into trips (trip_id, truck_id, trip_type, type, latitude, longitude, time, note) " +
-                "values (" + MainActivity.CURRENT_TRIP_ID + ", \"" +MainActivity.TRUCK_ID + "\", \"" + MainActivity.tripType + "\", \"" +
-                location.getType() + "\", " +
-                location.getLatitude() + ", " + location.getLongitude() + ", \'" + location.getJsonTime() + "\', \"" + location.getNote() + "\")");
-        Log.i(TAG, location.getType() + " " + location.getLatitude() + " " + location.getLongitude());
-        sqlDb.close();
-        db.close();
-        //mDetailStatusTextView.setText(getListString());
-    }
+//    private void saveData(MyLocation location) {
+//        LocationList locationList = LocationList.getInstance();
+//        locationList.add(location);
+//        DbAdapter db = new DbAdapter(getApplicationContext());
+//        SQLiteDatabase sqlDb = db.getWritableDatabase();
+//        Log.i(TAG, "Checking time string " + location.getTimeString());
+//        sqlDb.execSQL("insert into trips (trip_id, truck_id, trip_type, type, latitude, longitude, time, note) " +
+//                "values (" + MainActivity.CURRENT_TRIP_ID + ", \"" +MainActivity.TRUCK_ID + "\", \"" + MainActivity.tripType + "\", \"" +
+//                location.getType() + "\", " +
+//                location.getLatitude() + ", " + location.getLongitude() + ", \'" + location.getJsonTime() + "\', \"" + location.getNote() + "\")");
+//        Log.i(TAG, location.getType() + " " + location.getLatitude() + " " + location.getLongitude());
+//        sqlDb.close();
+//        db.close();
+//        //mDetailStatusTextView.setText(getListString());
+//    }
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
