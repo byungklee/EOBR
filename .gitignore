@@ -1,0 +1,11 @@
+.DS_Store
+.gradle/
+.idea/
+app/build/intermediates/
+app/build/outputs/apk/manifest-merger-debug-report.txt
+build/.DS_Store
+build/intermediates/.DS_Store
+build/intermediates/dex-cache/.DS_Store
+db/temp.txt
+libs/.DS_Store
+tempgra/
