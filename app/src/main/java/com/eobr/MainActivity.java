@@ -44,8 +44,8 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
     public static int CURRENT_TRIP_ID = -1;
     public static Intent GPSIntent;
     private static final String TAG = "MainActivity";
-//    public static final String serverIp = "http://134.139.249.76";
-    public static final String serverIp = "http://192.168.0.56";
+    public static final String serverIp = "http://134.139.249.76";
+//    public static final String serverIp = "http://192.168.0.56";
 //      public static final String serverIp = "http://192.168.0.23";
     public static final int port = 8888;
     public static final String serverIpAndPort = serverIp+":"+port;
