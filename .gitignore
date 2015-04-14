@@ -9,3 +9,4 @@ build/intermediates/dex-cache/.DS_Store
 db/temp.txt
 libs/.DS_Store
 tempgra/
+app/build/generated/source/r/debug/com/
