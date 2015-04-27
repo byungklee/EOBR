@@ -27,6 +27,7 @@
             android:layout_below="@+id/status_text_view"
             android:background="@drawable/stroke_bg" >
         </TextView>
+
         </LinearLayout>
 
     <LinearLayout
@@ -83,6 +84,21 @@
                 <!--android:text="@string/od_3"-->
                 <!--android:id="@+id/origin_filling_out_paperwork"-->
                 <!--/>-->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Special"
+                android:gravity="center"
+                android:textSize="36sp"
+                />
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="85dp"
+                android:text="@string/note"
+                android:textSize="24sp"
+                android:id="@+id/note"
+                android:layout_below="@+id/origin_layer"
+                android:layout_alignLeft="@+id/origin_layer"/>
         </LinearLayout>
 
         <LinearLayout
@@ -142,39 +158,46 @@
                 />
             <Button
                 android:layout_width="match_parent"
-                android:layout_height="85dp"
+                android:layout_height="65dp"
                 android:textSize="24sp"
                 android:text="@string/available"
                 android:id="@+id/available"/>
             <Button
                 android:layout_width="match_parent"
-                android:layout_height="85dp"
-                android:layout_marginTop="16dp"
+                android:layout_height="65dp"
+                android:layout_marginTop="8dp"
                 android:textSize="24sp"
                 android:text="@string/not_available"
                 android:id="@+id/not_available"/>
             <Button
                 android:layout_width="match_parent"
-                android:layout_height="85dp"
-                android:layout_marginTop="16dp"
+                android:layout_height="65dp"
+                android:layout_marginTop="8dp"
                 android:textSize="24sp"
-                android:text="@string/pickup"
-                android:id="@+id/pickup"/>
+                android:text="@string/pickup_empty"
+                android:id="@+id/pickup_empty"/>
             <Button
                 android:layout_width="match_parent"
-                android:layout_height="85dp"
-                android:layout_marginTop="16dp"
+                android:layout_height="65dp"
+                android:layout_marginTop="8dp"
                 android:textSize="24sp"
-                android:text="@string/deliver"
-                android:id="@+id/deliver"/>
+                android:text="@string/pickup_full"
+                android:id="@+id/pickup_full"/>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="65dp"
+                android:layout_marginTop="8dp"
+                android:textSize="24sp"
+                android:text="@string/deliver_empty"
+                android:id="@+id/deliver_empty"/>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="65dp"
+                android:layout_marginTop="8dp"
+                android:textSize="24sp"
+                android:text="@string/deliver_full"
+                android:id="@+id/deliver_full"/>
         </LinearLayout>
     </LinearLayout>
-    <Button 
-        android:layout_width="144dp"
-        android:layout_height="85dp"
-        android:text="@string/note"
-        android:textSize="24sp"
-        android:id="@+id/note"
-         android:layout_below="@+id/origin_layer"
-         android:layout_alignLeft="@+id/origin_layer"/>
+
 </LinearLayout>

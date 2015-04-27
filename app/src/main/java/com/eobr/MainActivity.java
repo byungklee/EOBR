@@ -1,12 +1,17 @@
 package com.eobr;
 
+import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -36,7 +41,7 @@ import java.util.List;
  * Top level in hierarchy which handles required data, and all the views are handled by this activity.
  */
 public class MainActivity extends ActionBarActivity implements GPSListener {
-
+    public static boolean DEBUG = true;
     public enum ServiceState {READY, RUNNING, WAIT}
     public static ServiceState state = ServiceState.READY;
     public static String tripType = "";
@@ -44,7 +49,7 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
     public static int CURRENT_TRIP_ID = -1;
     public static Intent GPSIntent;
     private static final String TAG = "MainActivity";
-    public static final String serverIp = "http://134.139.249.76";
+    public static final String serverIp = DEBUG ? "http://192.168.0.56":"http://134.139.249.76";
 //    public static final String serverIp = "http://192.168.0.56";
 //      public static final String serverIp = "http://192.168.0.23";
     public static final int port = 8888;
@@ -55,6 +60,10 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
 
     private static GPSReceiver gpsReceiver;
     public static ResourceManager rm;
+    private GPSService gpsService;
+    private boolean mBound;
+    private boolean isBluetoothConnectionOn;
+    private boolean isStartedManually = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -68,12 +77,11 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
 
 		if (savedInstanceState == null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-			transaction.add(R.id.container, new LoginFragment()).commit();
+			transaction.add(R.id.container, new StatusFragment()).commit();
 		}
-
-        //Register receiver to listen on stop.
-
-
+        mBound = false;
+        Intent i = new Intent(getApplicationContext(), GPSService.class);
+        bindService(i,mConnection,Context.BIND_AUTO_CREATE);
 	}
 
     @Override
@@ -81,10 +89,16 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
         super.onResume();
         Log.i("MainActivity", "Resuming");
         gpsReceiver = new GPSReceiver(this);
+        //Register receiver to listen on stop.
         IntentFilter mLocationOnceFilter = new IntentFilter(Constants.BROAD_CAST_LOCATION_ONCE);
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(
                 gpsReceiver,
                 mLocationOnceFilter);
+
+        IntentFilter mBluetoothFilter = new IntentFilter(BluetoothChecker.BLUETOOTH_CONNECTION);
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(
+                mBluetoothConnection,
+                mBluetoothFilter);
         getOverflowMenu();
 
         DbAdapter db = new DbAdapter(getApplicationContext());
@@ -92,6 +106,18 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
         rm = new ResourceManager(this);
         rm.execute();
         mContext = this;
+//
+//        if(isBluetoothOn) {
+//           viewTrip();
+//        }
+
+    }
+
+    @Override
+    protected void onStop() {
+        Log.d(TAG, "OnStop");
+        super.onStop();
+
     }
 
     //Using this method because Samsung does not allow menu on the action bar for testing.
@@ -146,7 +172,6 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
     @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		//Inflate the menu; this adds items to the action bar if it is present.
-		
 		getMenuInflater().inflate(R.menu.main, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
@@ -169,41 +194,53 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
 		int id = item.getItemId();
 		
 		switch(id) {
-			case R.id.action_home:
-				Toast.makeText(getApplicationContext(), "To_home", Toast.LENGTH_SHORT).show();
-                popToMain();
-				break;
+//			case R.id.action_home:
+//				Toast.makeText(getApplicationContext(), "To_home", Toast.LENGTH_SHORT).show();
+//                popToMain();
+//				break;
 			case R.id.action_new_trip:
                 popToMain();
-                if(MainActivity.state == ServiceState.RUNNING) {
-                    Toast.makeText(getApplicationContext(), "There is currently a running trip.", Toast.LENGTH_SHORT).show();
-
-                } else {
-                    FragmentManager fragmentManager2 = getSupportFragmentManager();
-                    FragmentTransaction fragmentTransaction2 = fragmentManager2.beginTransaction();
-                    NewTripFragment fragment2 = new NewTripFragment();
-                    fragmentTransaction2.replace(R.id.container, fragment2);
-                    fragmentTransaction2.addToBackStack("main");
-                    fragmentTransaction2.commit();
+//                if(MainActivity.state == ServiceState.RUNNING) {
+//                    Toast.makeText(getApplicationContext(), "There is currently a running trip.", Toast.LENGTH_SHORT).show();
+//
+//                } else {
+//                    FragmentManager fragmentManager2 = getSupportFragmentManager();
+//                    FragmentTransaction fragmentTransaction2 = fragmentManager2.beginTransaction();
+//                    NewTripFragment fragment2 = new NewTripFragment();
+//                    fragmentTransaction2.replace(R.id.container, fragment2);
+//                    fragmentTransaction2.addToBackStack("main");
+//                    fragmentTransaction2.commit();
+//                }
+                if(MainActivity.state == ServiceState.READY) {
+                    isStartedManually = true;
+                    gpsService.turnOnGps();
                 }
+
 				break;
-			case R.id.action_view_trip:
-				Toast.makeText(getApplicationContext(), "View", Toast.LENGTH_SHORT).show();
-                viewTrip();
-				break;
+//			case R.id.action_view_trip:
+//				Toast.makeText(getApplicationContext(), "View", Toast.LENGTH_SHORT).show();
+//                viewTrip();
+//				break;
             case R.id.action_stop_trip:
-                if(MainActivity.state == ServiceState.RUNNING) {
-                    state = ServiceState.WAIT;
+//                if(MainActivity.state == ServiceState.RUNNING) {
+//                    state = ServiceState.WAIT;
+//                    Intent i = new Intent(getApplicationContext(), GPSIntentService.class);
+//                    i.putExtra("type", "stop");
+//                    startService(i);
+//                    LoginFragment.setStartButton(true);
+//                } else {
+//                    Toast.makeText(getApplicationContext(), "There is no running trip.", Toast.LENGTH_SHORT).show();
+//                }
+//                Toast.makeText(getApplicationContext(), "Stop", Toast.LENGTH_SHORT).show();
+//                popToMain();
+                if(MainActivity.state == ServiceState.RUNNING && isStartedManually == true) {
+                    //gpsService.turnOffGps();
                     Intent i = new Intent(getApplicationContext(), GPSIntentService.class);
                     i.putExtra("type", "stop");
                     startService(i);
-                    LoginFragment.setStartButton(true);
-
-                } else {
-                    Toast.makeText(getApplicationContext(), "There is no running trip.", Toast.LENGTH_SHORT).show();
+                    isStartedManually = false;
                 }
-                Toast.makeText(getApplicationContext(), "Stop", Toast.LENGTH_SHORT).show();
-                popToMain();
+
                 break;
 		}
 		return false;
@@ -244,13 +281,12 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
         }
         //when stop has been called
         if(myLocation.getType().equals("stop")) {
-            stopService(MainActivity.GPSIntent);
-           toInitialState();
+            //stopService(MainActivity.GPSIntent);
+            gpsService.turnOffGps();
+            toInitialState();
             rm.execute();
         }
-
     }
-
 
     /**
      * Creates KML File on a device or an external drive. Currently, not using because the server is
@@ -316,10 +352,55 @@ public class MainActivity extends ActionBarActivity implements GPSListener {
     public static void toInitialState() {
         Log.i(TAG, "To initial State");
         //saveData();
-        NoteList.getInstance().clear();
-        LocationList.getInstance().clear();
+//        NoteList.getInstance().clear();
+//        LocationList.getInstance().clear();
         CURRENT_TRIP_ID = -1;
         id = 0;
         state = ServiceState.READY;
+    }
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+           GPSService.LocalBinder binder = (GPSService.LocalBinder) service;
+            gpsService = (GPSService) binder.getService();
+            mBound = true;
+            //mService.setCallback(callback);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            gpsService = null;
+            mBound = false;
+
+        }
+    };
+
+    public GPSService getGPSService() {
+        return gpsService;
+    }
+
+    private BroadcastReceiver mBluetoothConnection = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getIntExtra("Connection", 0) == 0) {
+                //viewTrip();
+                isBluetoothConnectionOn = true;
+                //if(MainActivity.this.getApplication().getApplicationContext().get)
+
+            } else if(intent.getIntExtra("Connection", 0) == 0 ) {
+                isBluetoothConnectionOn = false;
+            }
+        }
+    };
+
+    @Override
+    protected void onDestroy() {
+        gpsService.kill();
+        unbindService(mConnection);
+        super.onDestroy();
     }
 }

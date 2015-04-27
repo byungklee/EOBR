@@ -48,6 +48,7 @@ public class MyLocation {
         } catch(JSONException e) {
             e.printStackTrace();
         }
+        trip_type = "none";
     }
 
     /**

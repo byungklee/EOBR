@@ -4,12 +4,12 @@
     tools:context="com.eobr.MainActivity" >
 
     
-    <item
-        android:id="@+id/action_home"
-        android:title="@string/action_home"
-        android:orderInCategory="1"
-        app:showAsAction="always"
-        />
+    <!--<item-->
+        <!--android:id="@+id/action_home"-->
+        <!--android:title="@string/action_home"-->
+        <!--android:orderInCategory="1"-->
+        <!--app:showAsAction="always"-->
+        <!--/>-->
     
     <item
         android:id="@+id/action_new_trip"
@@ -17,12 +17,12 @@
         android:orderInCategory="2"
         app:showAsAction="always"
         />
-    <item
-        android:id="@+id/action_view_trip"
-        android:title="@string/action_view_trip"
-        android:orderInCategory="3"
-        app:showAsAction="always"
-        />
+    <!--<item-->
+        <!--android:id="@+id/action_view_trip"-->
+        <!--android:title="@string/action_view_trip"-->
+        <!--android:orderInCategory="3"-->
+        <!--app:showAsAction="always"-->
+        <!--/>-->
     <item
         android:id="@+id/action_stop_trip"
         android:title="@string/action_stop_trip"

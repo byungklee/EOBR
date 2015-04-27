@@ -59,13 +59,29 @@ public class LoginFragment extends Fragment {
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 if(MainActivity.state == MainActivity.ServiceState.READY) {
-                    NewTripFragment fragment2 = NewTripFragment.newInstance();
+//                    NewTripFragment fragment2 = NewTripFragment.newInstance();
+//
+//                    //What is happening with transaction.replace is that
+//                    //remove(fragment1).add(fragment2)
+//                    fragmentTransaction.replace(R.id.container, fragment2);
+//                    fragmentTransaction.addToBackStack("main");
+//                    fragmentTransaction.commit();
 
-                    //What is happening with transaction.replace is that
-                    //remove(fragment1).add(fragment2)
-                    fragmentTransaction.replace(R.id.container, fragment2);
-                    fragmentTransaction.addToBackStack("main");
-                    fragmentTransaction.commit();
+
+
+                    // TODO Auto-generated method stub
+//                    MainActivity.GPSIntent = new Intent(getActivity().getApplicationContext(), GPSService.class);
+//                    getActivity().startService(MainActivity.GPSIntent);
+                    ((MainActivity) getActivity()).getGPSService().turnOnGps();
+                    FragmentManager fm = getFragmentManager();
+                    FragmentTransaction frt = fm.beginTransaction();
+                    StatusFragment sfm = new StatusFragment();
+                    frt.replace(R.id.container, sfm);
+                    frt.addToBackStack("new");
+                    frt.commit();
+                    // MainActivity.isRunning = true;
+//                    MainActivity.state = MainActivity.ServiceState.RUNNING;
+
                 } else if(MainActivity.state == MainActivity.ServiceState.RUNNING) {
                     StatusFragment sfm = new StatusFragment();
                     fragmentTransaction.replace(R.id.container, sfm);

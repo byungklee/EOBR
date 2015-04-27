@@ -22,10 +22,10 @@
     <string name="back">Back</string>
 
     <string name="trip_type">Trip Type</string>
-    <string name="pickup_empty">Pickup Empty</string>
-    <string name="pickup_full">Pickup Full</string>
-    <string name="deliver_empty">Deliver Empty</string>
-    <string name="deliver_full">Deliver Full</string>
+    <string name="pickup_empty">Picked Up Empty</string>
+    <string name="pickup_full">Picked Up Full</string>
+    <string name="deliver_empty">Delivered Empty</string>
+    <string name="deliver_full">Delivered Full</string>
 
     <!-- Status -->
     <string name="status">Status</string>
@@ -48,7 +48,7 @@
     <string name="container_status">Container Status</string>
     <string name="not_available">Not Available</string>
     <string name="available">Available</string>
-    <string name="pickup">Pick Up</string>
-    <string name="deliver">Deliver</string>
+    <string name="pickup">Picked Up</string>
+    <string name="deliver">Delivered</string>
 
 </resources>

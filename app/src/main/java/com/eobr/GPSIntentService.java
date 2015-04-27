@@ -32,7 +32,6 @@ public class GPSIntentService extends Service implements LocationListener {
 
     @Override
     public IBinder onBind(Intent intent) {
-
         return null;
     }
 
@@ -71,11 +70,6 @@ public class GPSIntentService extends Service implements LocationListener {
             }
             LocationList.getInstance().add(myLocation);
         }
-
-
-
-//        if(type != null)
-//            saveData(myLocation);
 
         Intent localIntent= new Intent(Constants.BROAD_CAST_LOCATION_ONCE);
 

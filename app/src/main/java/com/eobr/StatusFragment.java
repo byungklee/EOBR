@@ -1,5 +1,7 @@
 package com.eobr;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -35,12 +37,26 @@ public class StatusFragment extends Fragment implements GPSListener {
     private Button mDockOut;
     private Button mAvailable;
     private Button mNotAvailable;
-    private Button mPickUp;
-    private Button mDeliver;
+    private Button mPickedUpEmpty;
+    private Button mPickedUpFull;
+    private Button mDeliveredEmpty;
+    private Button mDeliveredFull;
 
+    private TextView mStatus;
     private TextView mDetailStatusTextView;
     private GPSReceiver gpsReceiver;
     private LocationList locationList;
+    private BroadcastReceiver gpsStatusReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getIntExtra("Status",0) == 0) {
+                mStatus.setText("Status: Stopped");
+            } else {
+                mStatus.setText("Status: Running");
+            }
+        }
+    };
+
 
     /**
      * Use this factory method to create a new instance of
@@ -88,14 +104,31 @@ public class StatusFragment extends Fragment implements GPSListener {
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(
                 gpsReceiver,
                 mLocationOnceFilter);
+        IntentFilter mGPSServiceStatus = new IntentFilter(Constants.GPS_SERVICE_STATUS);
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).registerReceiver(
+                gpsStatusReceiver,
+                mGPSServiceStatus);
+
+
         if(!locationList.isEmpty())
             mDetailStatusTextView.setText(getListString());
+
+        if(MainActivity.state == MainActivity.ServiceState.RUNNING) {
+            mStatus.setText("Status: Running");
+        } else {
+            mStatus.setText("Status: Stopped");
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_status, container, false);
+
+        /**
+         * Status Textview
+         */
+        mStatus = (TextView) v.findViewById(R.id.status_text_view);
 
         /**
          * Note Button
@@ -136,11 +169,16 @@ public class StatusFragment extends Fragment implements GPSListener {
         mNotAvailable = (Button) v.findViewById(R.id.not_available);
         setOnClickListenerForGPS(mNotAvailable);
 
-        mPickUp = (Button) v.findViewById(R.id.pickup);
-        setOnClickListenerForGPS(mPickUp);
+        mPickedUpEmpty = (Button) v.findViewById(R.id.pickup_empty);
+        setOnClickListenerForGPS(mPickedUpEmpty);
+        mPickedUpFull = (Button) v.findViewById(R.id.pickup_full);
+        setOnClickListenerForGPS(mPickedUpFull);
 
-        mDeliver = (Button) v.findViewById(R.id.deliver);
-        setOnClickListenerForGPS(mDeliver);
+        mDeliveredEmpty = (Button) v.findViewById(R.id.deliver_empty);
+        setOnClickListenerForGPS(mDeliveredEmpty);
+
+        mDeliveredFull = (Button) v.findViewById(R.id.deliver_full);
+        setOnClickListenerForGPS(mDeliveredFull);
 
 //        IntentFilter mStatusIntentFilter = new IntentFilter(
 //                Constants.BROAD_CAST_LOCATION);
@@ -171,7 +209,8 @@ public class StatusFragment extends Fragment implements GPSListener {
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openNewFragment(f);
+                if(MainActivity.state == MainActivity.ServiceState.RUNNING)
+                    openNewFragment(f);
             }
         });
     }
@@ -182,7 +221,8 @@ public class StatusFragment extends Fragment implements GPSListener {
             public void onClick(View v) {
                 //System.out.println("Clicked");
                 Log.d(TAG, "Clicked Button");
-                getDataFromGps(b);
+                if(MainActivity.state == MainActivity.ServiceState.RUNNING)
+                    getDataFromGps(b);
             }
         });
     }
@@ -230,5 +270,6 @@ public class StatusFragment extends Fragment implements GPSListener {
          * Detach gps receiver if this fragment is onStop.
          */
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(gpsReceiver);
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).unregisterReceiver(gpsStatusReceiver);
     }
 }
