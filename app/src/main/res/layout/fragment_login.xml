@@ -27,8 +27,9 @@
             android:layout_marginRight="100dp"
             android:gravity="center"
             android:textSize="48sp"
-            android:drawableTop="@drawable/app_icon_start"
+
             />
+        <!--android:drawableTop="@drawable/app_icon_start"-->
 
         <TextView
             android:id="@+id/stop_button_text"
@@ -38,8 +39,9 @@
             android:layout_marginLeft="100dp"
             android:gravity="center"
             android:textSize="48sp"
-            android:drawableTop="@drawable/app_icon_stop"
+
             />
+        <!--android:drawableTop="@drawable/app_icon_stop"-->
 
     </LinearLayout>
 

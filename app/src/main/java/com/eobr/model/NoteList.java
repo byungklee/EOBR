@@ -1,7 +1,6 @@
 package com.eobr.model;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * Created by byung on 1/21/15.
@@ -23,10 +22,7 @@ public class NoteList {
     public void add(String filename) {
         notelist.add(filename);
     }
-//    public ArrayList<String> getList() { return notelist; }
-    public Iterator iterator() {
-        return notelist.iterator();
-    }
+
     public void clear() {
         notelist.clear();
     }
