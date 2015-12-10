@@ -1,7 +1,7 @@
 EOBR
 ====
 
-Research Project(Currently working on)
+Research Project
 
 This android application is to collect the data of drayage trucks in every interval to analyze the pollution and congestion.
 
